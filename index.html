@@ -1913,7 +1913,7 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
   <div class="screen" id="screenInbox">
     <!-- Header -->
     <header class="app-header" id="appHeader">
-      <button class="header-profile-btn" id="btnHeaderProfile" aria-label="My Profile">
+      <button class="header-profile-btn" id="btnHeaderProfile" aria-label="My Profile" disabled>
           <div class="av" id="headerProfileAvatar" style="background:#1d72fe">U</div>
         </button>
       <div class="hdr-sep" aria-hidden="true"></div>
@@ -2265,7 +2265,7 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
 
         <div class="ep-bottom">
           <button class="ep-save" id="btnSaveChanges">Save Changes</button>
-          <div class="ep-actions"><button class="ep-logout" id="btnLogout" type="button">Logout</button><button class="ep-del" id="rowDeleteAccount" type="button">Delete Account</button></div>
+          <div class="ep-actions"><button class="ep-logout" id="btnLogout" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Logout</button><button class="ep-del" id="rowDeleteAccount" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l.8 12.2h9.4L17.5 7M10 11v5M14 11v5"/></svg>Delete Account</button></div>
         </div>
       </div>
 
@@ -2329,8 +2329,13 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
     const close=document.getElementById('btnDrawerClose');
     if(!drawer||!scrim) return;
     const show=()=>{
-      drawer.classList.remove('chat-context');
+      drawer.classList.remove('chat-context','dp-ctx');
       drawer.classList.add('menu-context');
+      var _m=document.getElementById('drawerMainView'), _p=document.getElementById('drawerProfileView'), _b=document.getElementById('drawerBlockView'), _bb=document.getElementById('btnDrawerBack');
+      if(_m){ _m.classList.remove('hidden'); delete _m.dataset.page; }
+      if(_p) _p.classList.remove('active');
+      if(_b) _b.classList.remove('active');
+      if(_bb) _bb.style.display='none';
       const chatActions=document.getElementById('chatContextActions');
       const main=document.getElementById('drawerMainView');
       if(chatActions) chatActions.style.display='none';
@@ -6719,5 +6724,51 @@ body {font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",A
 }
 .reply-bar { align-items: flex-start; }
 </style>
+<style id="dpPageCss">
+#settingsDrawer.dp-ctx{--pm-bg:var(--app-bg);--dp-btn:#eef1f7;--dp-label:#5b6478}
+:root[data-theme="dark"] #settingsDrawer.dp-ctx{--dp-btn:rgba(255,255,255,.1);--dp-label:#94a3b8}
+#settingsDrawer#settingsDrawer.dp-ctx{position:absolute;inset:0;width:100%;max-width:none;height:100%;max-height:none;border-radius:0;box-shadow:none;background:var(--app-bg)}
+#settingsDrawer.dp-ctx > .drawer-body{padding:0}
+#settingsDrawer.dp-ctx:has(#drawerMainView.hidden) > .drawer-header{height:64px;padding:0 21px;justify-content:space-between}
+#settingsDrawer.dp-ctx .drawer-title-group{gap:25px}
+#settingsDrawer.dp-ctx #btnDrawerBack{width:36px;height:36px;border-radius:50%;background:var(--dp-btn);display:grid;place-items:center;border:0}
+#settingsDrawer.dp-ctx #btnDrawerBack svg{width:20px;height:20px}
+#settingsDrawer.dp-ctx #drawerTitle{font-size:20px;font-weight:700}
+#settingsDrawer.dp-ctx #btnDrawerClose{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:0;padding:0;background:var(--dp-btn)}
+#settingsDrawer.dp-ctx #btnDrawerClose svg{width:20px;height:20px}
+#drawerProfileView .ep-avatar-wrap{width:120px;height:120px;margin:40px auto 22px;position:relative}
+#drawerProfileView #subviewProfileAvatar{width:120px;height:120px;font-size:40px}
+#drawerProfileView #btnTriggerPhotoUpload.ep-cam{width:38px;height:38px;right:0;bottom:0;background:var(--dp-btn);color:var(--text-main);border:0}
+#drawerProfileView #btnTriggerPhotoUpload.ep-cam svg{width:20px;height:20px}
+#drawerProfileView .ep-card{padding:0 22px}
+#drawerProfileView .ep-row{min-height:68px;padding:0;gap:16px}
+#drawerProfileView .ep-row:not(:last-child){border-bottom:1px solid var(--border-subtle)}
+#drawerProfileView .ep-label{font-size:18px;color:var(--dp-label)}
+#drawerProfileView .ep-input{height:66px;font-size:18px;color:var(--text-main)}
+#drawerProfileView .ep-tip{padding:0 22px;margin-top:-12px;font-size:15px;color:var(--dp-label)}
+#drawerProfileView .ep-bottom{padding:0}
+#drawerProfileView .ep-actions{display:flex;padding:22px 21px 0;gap:16px}
+#drawerProfileView .ep-actions button{flex:1;height:48px;border-radius:24px;font-size:17px;font-weight:500;gap:14px;display:flex;align-items:center;justify-content:center;border:0}
+#drawerProfileView .ep-actions button svg{width:26px;height:26px}
+#drawerProfileView .ep-logout{background:#f3f5fa;color:var(--text-main)}
+#drawerProfileView .ep-del{background:#fde8e8;color:#e60000}
+:root[data-theme="dark"] #drawerProfileView .ep-logout{background:rgba(255,255,255,.1)}
+:root[data-theme="dark"] #drawerProfileView .ep-del{background:rgba(230,0,0,.18);color:#ff6b6b}
+#drawerProfileView .ep-save{display:none;margin:22px 21px 0}
+#drawerProfileView.dirty .ep-save{display:block}
+</style>
+<script>
+(function(){
+  var pv=document.getElementById('drawerProfileView'); if(!pv) return;
+  var n=document.getElementById('inputDisplayName'), u=document.getElementById('inputUsername'), s=document.getElementById('btnSaveChanges');
+  var snap=['',''];
+  function take(){ snap=[n?n.value:'',u?u.value:'']; pv.classList.remove('dirty'); }
+  function chk(){ pv.classList.toggle('dirty',(n&&n.value!==snap[0])||(u&&u.value!==snap[1])); }
+  var was=false;
+  new MutationObserver(function(){ var a=pv.classList.contains('active'); if(a&&!was) setTimeout(take,50); was=a; }).observe(pv,{attributes:true,attributeFilter:['class']});
+  [n,u].forEach(function(e){ if(e) e.addEventListener('input',chk); });
+  if(s) s.addEventListener('click',function(){ setTimeout(take,600); });
+})();
+</script>
 </body>
 </html>
