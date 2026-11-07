@@ -4270,6 +4270,19 @@ function makeDateDivider(ts) {
   return el;
 }
 
+/* Discord-style reply preview (only shown in no-bubble mode; bubble mode keeps its own quote box) */
+function dcReplyHtml(msg) {
+  if (!msg || !msg.replyTo || msg.deleted) return '';
+  const by = msg.replyTo.by;
+  const mine = !!(currentUser && by === currentUser.uid);
+  const p = mine ? currentProfile : activePeer;
+  const nm = mine ? ((currentProfile && (currentProfile.display || currentProfile.username)) || 'You') : ((activePeer && activePeer.display) || senderLabel(by));
+  const y = !mine && !!(activePeer && activePeer.isYuki && window.YUKI_PFP);
+  const av = y ? `<img class="yuki-pfp-img" src="${window.YUKI_PFP}" alt="">` : avatarInner(p, nm);
+  const bg = y ? '#f6efe6' : getAvColor((p && p.username) || nm);
+  return `<div class="msg-quote dc-reply" data-reply-id="${esc(msg.replyTo.id)}"><span class="dc-qav" style="background:${bg}">${av}</span><b class="dc-qn">${esc(nm)}</b><span class="dc-qt">${esc(msg.replyTo.text)}</span></div>`;
+}
+
 function buildMessageRow(id, msg, animate) {
   const isMine = msg.by === currentUser?.uid;
   const senderName = isMine ? (currentProfile?.display || 'You') : (activePeer?.display || 'Operator');
@@ -4285,6 +4298,7 @@ function buildMessageRow(id, msg, animate) {
   row.dataset.id = id;
   row.innerHTML = `
     <div class="msg-bubble-wrap">
+      ${dcReplyHtml(msg)}
       <div class="msg-avatar dc-av" style="background:${hdrBg}">${hdrAv}</div>
       <div class="dc-name"><span class="msg-sender-name dc-name-t">${esc(senderName)}</span><span class="dc-time">${esc(timeStr)}</span></div>
       ${msgBubbleHtml(msg, timeStr)}
@@ -5877,7 +5891,7 @@ body { top: 0; left: 0; right: 0; }
     sync();
   }
   var KEY='yukiPrefs', root=document.documentElement;
-  var DEF={amoled:0,fs:1,accent:0,rm:0,hc:0,cl:0,hp:0,ts:1,mav:1,cb:0,bub:0};
+  var DEF={amoled:1,fs:1,accent:0,rm:0,hc:0,cl:0,hp:0,ts:1,mav:1,cb:0,bub:0};
   var P={}, k;
   for(k in DEF) P[k]=DEF[k];
   try{
@@ -7196,7 +7210,7 @@ document.getElementById('btnSaveChanges')?.addEventListener('click', function(){
    The saved choice is kept, so it comes back automatically when you return to dark. */
 (function(){
   var root=document.documentElement, busy=false;
-  function wanted(){ try{ return JSON.parse(localStorage.getItem('yukiPrefs')||'{}').amoled===1; }catch(e){ return false; } }
+  function wanted(){ try{ var v=JSON.parse(localStorage.getItem('yukiPrefs')||'{}').amoled; return v===undefined ? true : v===1; }catch(e){ return true; } } /* default = ON until the user changes it */
   function sync(){
     if(busy) return; busy=true;
     var dark=root.getAttribute('data-theme')==='dark';
@@ -7570,32 +7584,34 @@ window.YUKI_PFP = "data:image/gif;base64,R0lGODlhkACQAIaVAOvhyefYuebWtOjSreTSsOr
 </style>
 
 <style id="dcFlatCss">
-/* ===== No-bubble mode = Discord style (avatar + name + time on the first message of a run).
-   Everything is scoped to :root:not([data-p-bub="1"]) -> "Show Bubbles" ON keeps the old look 100%. ===== */
+/* ===== No-bubble mode = Discord style. Everything is scoped to :root:not([data-p-bub="1"])
+   -> with "Show Bubbles" ON the old look stays 100% as it was. ===== */
 
-/* header pieces are invisible in bubble mode */
-.msg-bubble-wrap > .dc-av, .msg-bubble-wrap > .dc-name { display: none; }
+/* extra pieces are invisible in bubble mode */
+.msg-bubble-wrap > .dc-av, .msg-bubble-wrap > .dc-name, .msg-bubble-wrap > .dc-reply { display: none; }
+.date-divider .dc-date-full { display: none; }
 
 :root:not([data-p-bub="1"]) { --msg-gap-in: 2px; --msg-gap-out: 18px; }
+:root:not([data-p-bub="1"]) .messages-container > .chat-message-row.dc-gap { margin-bottom: var(--msg-gap-out); }
 
-/* everyone on the left, full width */
+/* ---- layout: avatar column + content column, everybody on the left ---- */
 :root:not([data-p-bub="1"]) .chat-message-row.dc-row.is-mine { flex-direction: row; }
-:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble-wrap {
-  position: relative; width: 100%; max-width: 100%;
-  align-items: flex-start; padding-left: 48px;
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble-wrap,
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row.is-mine .msg-bubble-wrap {
+  display: grid; grid-template-columns: 48px minmax(0, 1fr);
+  width: 100%; max-width: 100%; position: relative; align-items: start; padding-left: 0;
 }
-:root:not([data-p-bub="1"]) .chat-message-row.dc-row.is-mine .msg-bubble-wrap { align-items: flex-start; }
-:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble { align-self: flex-start; }
-:root:not([data-p-bub="1"]) .chat-message-row.dc-row .seen-tag { align-self: flex-end; }
-:root:not([data-p-bub="1"])[data-p-mav="0"] .chat-message-row.dc-row .msg-bubble-wrap { padding-left: 0; }
+:root:not([data-p-bub="1"])[data-p-mav="0"] .chat-message-row.dc-row .msg-bubble-wrap { grid-template-columns: 0 minmax(0, 1fr); }
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble-wrap > .dc-reply { grid-column: 2; grid-row: 1; }
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble-wrap > .dc-av    { grid-column: 1; grid-row: 2 / span 2; }
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble-wrap > .dc-name  { grid-column: 2; grid-row: 2; }
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble-wrap > .msg-bubble { grid-column: 2; grid-row: 3; justify-self: start; align-self: start; line-height: 1.375; padding: 0 !important; }
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble-wrap > .seen-tag { grid-column: 2; grid-row: 4; justify-self: end; }
 
-/* text: same size as before (font-size setting still works), Discord line height */
-:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble { line-height: 1.375; padding: 0 !important; }
-
-/* header on the first message of a run */
+/* ---- header on the first message of a run ---- */
 :root:not([data-p-bub="1"]) .chat-message-row.dc-row.grp-start .msg-bubble-wrap > .dc-av {
-  display: grid; position: absolute; left: 0; top: 0;
-  width: 38px; height: 38px; border-radius: 50%; font-size: 14px; align-self: auto;
+  display: grid; position: static; width: 38px; height: 38px; border-radius: 50%;
+  font-size: 14px; align-self: start; justify-self: start;
 }
 :root:not([data-p-bub="1"]) .chat-message-row.dc-row.grp-start .msg-bubble-wrap > .dc-name {
   display: flex; align-items: baseline; gap: 7px; line-height: 19px; margin: 0;
@@ -7609,15 +7625,46 @@ window.YUKI_PFP = "data:image/gif;base64,R0lGODlhkACQAIaVAOvhyefYuebWtOjSreTSsOr
 :root[data-p-ts="0"] .dc-name .dc-time { display: none; }
 :root[data-p-mav="0"] .chat-message-row .dc-av { display: none !important; }
 
-/* per-message time is replaced by the header time; keep only "(edited)" */
+/* ---- reply: plain line above the name (no box, no blue bar) ---- */
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-bubble > .msg-quote { display: none; }
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row.grp-start .msg-bubble-wrap > .dc-reply {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  max-width: none; background: none; border: 0; border-radius: 0; padding: 0; margin: 0 0 4px;
+  font-size: 13px; line-height: 18px; color: var(--text-muted); cursor: pointer;
+}
+:root:not([data-p-bub="1"]) .dc-reply .dc-qav {
+  display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; overflow: hidden;
+  vertical-align: -3px; margin-right: 6px; font-size: 8px; font-weight: 600; color: #fff;
+}
+:root:not([data-p-bub="1"]) .dc-reply .dc-qav img { width: 100%; height: 100%; object-fit: cover; display: block; }
+:root:not([data-p-bub="1"]) .dc-reply .dc-qn { display: inline; font-size: 13px; font-weight: 600; color: var(--text-main); opacity: 0.9; margin-right: 6px; }
+:root:not([data-p-bub="1"]) .dc-reply .dc-qt { display: inline; font-size: 13px; opacity: 1; white-space: normal; overflow: visible; text-overflow: clip; }
+
+/* ---- reply hardening: never a box / blue bar, mine or theirs ---- */
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .dc-reply,
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row.is-mine .dc-reply {
+  background: none !important; border: 0 !important; border-left: 0 !important; box-shadow: none !important; border-radius: 0 !important; padding: 0 !important;
+}
+
+/* ---- per-message time is replaced by the header time; keep only "(edited)" ---- */
 :root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-time { font-size: 0; margin: 0; opacity: 1; }
 :root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-time .msg-ed { font-size: 0; }
 :root:not([data-p-bub="1"]) .chat-message-row.dc-row .msg-time .msg-ed::before {
   content: "(edited)"; font-size: 11px; margin-left: 5px; color: var(--text-muted);
 }
+
+/* ---- date dividers: no pill. Only chats older than a week get a small plain date ("7 November 2026") ---- */
+:root:not([data-p-bub="1"]) .message-date-divider { display: none; }
+:root:not([data-p-bub="1"]) .message-date-divider.dc-old { display: flex; margin: 14px 0 8px; }
+:root:not([data-p-bub="1"]) .message-date-divider .date-pill { display: none; }
+:root:not([data-p-bub="1"]) .message-date-divider .dc-date-full {
+  display: block; font-size: 12.5px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.1px;
+}
 </style>
 <script id="dcGroupJs">
-/* marks the first message of every run (same sender, nothing in between) with .grp-start */
+/* .grp-start = first message of a run (same sender, nothing in between, not a reply);
+   .dc-gap    = the message before a new run (gets the bigger gap);
+   .dc-old    = date divider of a day that is 7+ days old (gets the small plain date) */
 (function(){
   var box=document.getElementById('messagesContainer'); if(!box) return;
   function isRow(el){ return !!(el && el.nodeType===1 && el.classList.contains('chat-message-row')); }
@@ -7627,14 +7674,34 @@ window.YUKI_PFP = "data:image/gif;base64,R0lGODlhkACQAIaVAOvhyefYuebWtOjSreTSsOr
     while(n && (n.id==='typingIndicator' || !visible(n))) n=n.previousElementSibling;
     return n;
   }
+  function dividers(){
+    var list=box.querySelectorAll('.message-date-divider'), now=new Date(), t0=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime();
+    for(var i=0;i<list.length;i++){
+      var d=list[i], parts=(d.dataset.day||'').split('-');
+      if(parts.length!==3) continue;
+      var dt=new Date(+parts[0],+parts[1],+parts[2]);
+      var old=Math.round((t0-dt.getTime())/86400000)>=7;
+      var full=d.querySelector('.dc-date-full');
+      if(!full){ full=document.createElement('span'); full.className='dc-date-full'; d.appendChild(full); }
+      var txt=dt.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+      if(full.textContent!==txt) full.textContent=txt;
+      if(d.classList.contains('dc-old')!==old) d.classList.toggle('dc-old',old);
+    }
+  }
   function regroup(){
     var k=box.children, rows=[], i;
     for(i=0;i<k.length;i++){ if(isRow(k[i]) && visible(k[i])) rows.push(k[i]); }
     for(i=0;i<rows.length;i++){
-      var el=rows[i], pv=rows[i-1], start=true;
-      if(pv && pv===prevVisible(el) && pv.classList.contains('is-mine')===el.classList.contains('is-mine')) start=false;
+      var el=rows[i], pv=rows[i-1], start=true, adj=false;
+      if(pv && pv===prevVisible(el)){
+        adj=true;
+        if(pv.classList.contains('is-mine')===el.classList.contains('is-mine') && !el.querySelector('.dc-reply')) start=false;
+      }
       if(el.classList.contains('grp-start')!==start) el.classList.toggle('grp-start',start);
+      if(pv){ var gap=adj&&start; if(pv.classList.contains('dc-gap')!==gap) pv.classList.toggle('dc-gap',gap); }
     }
+    if(rows.length && rows[rows.length-1].classList.contains('dc-gap')) rows[rows.length-1].classList.remove('dc-gap');
+    dividers();
   }
   var raf=0;
   function sched(){ regroup(); if(!raf) raf=requestAnimationFrame(function(){ raf=0; regroup(); }); }
