@@ -1864,6 +1864,20 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
 #authScreen.guest-setup .auth-divider { display:none !important; }
 #authScreen.guest-setup #btnGuestCancel { display:inline-block !important; }
 </style>
+<style id="no-message-header-tap-animation">
+/* No press/tap animation on sender names or profile photos inside chat messages */
+.chat-message-row .dc-av,
+.chat-message-row .dc-av:active,
+.chat-message-row .dc-name,
+.chat-message-row .dc-name:active,
+.chat-message-row .dc-name-t,
+.chat-message-row .dc-name-t:active {
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+  filter: none !important;
+}
+</style>
 </head>
 <body>
 <div id="bootSplash" aria-hidden="true"><i></i></div>
@@ -3489,7 +3503,7 @@ function dcReplyHtml(msg) {
   const y = !mine && !!(activePeer && activePeer.isYuki && window.YUKI_PFP);
   const av = y ? `<img class="yuki-pfp-img" src="${window.YUKI_PFP}" alt="">` : avatarInner(p, nm);
   const bg = y ? '#f6efe6' : getAvColor((p && p.username) || nm);
-  return `<div class="msg-quote dc-reply" data-reply-id="${esc(msg.replyTo.id)}"><span class="dc-qav" style="background:${bg}">${av}</span><b class="dc-qn">${esc(nm)}</b><span class="dc-qt">${esc(replyFullText(msg.replyTo))}</span></div>`;
+  return `<div class="msg-quote dc-reply" data-reply-id="${esc(msg.replyTo.id)}"><span class="dc-qav" style="background:${bg}">${av}</span><span class="dc-qcontent"><b class="dc-qn">${esc(nm)}</b> <span class="dc-qt">${esc(replyFullText(msg.replyTo))}</span></span></div>`;
 }
 
 function buildMessageRow(id, msg, animate) {
@@ -3794,7 +3808,7 @@ function msgBubbleHtml(msg, timeStr) {
   }
   let h = '<div class="msg-bubble">';
   if (msg.forwarded) h += `<div class="msg-fwd">${ICON_FWD}<span>Forwarded</span></div>`;
-  if (msg.replyTo) h += `<div class="msg-quote" data-reply-id="${esc(msg.replyTo.id)}"><b>${esc(senderLabel(msg.replyTo.by))}</b><span>${esc(replyFullText(msg.replyTo))}</span></div>`;
+  if (msg.replyTo) h += `<div class="msg-quote" data-reply-id="${esc(msg.replyTo.id)}"><span class="msg-quote-content"><b>${esc(senderLabel(msg.replyTo.by))}</b> <span>${esc(replyFullText(msg.replyTo))}</span></span></div>`;
   h += `<span class="msg-text">${esc(msg.text)}</span><span class="msg-time">${msg.edited ? '<span class="msg-ed">edited \u00b7 </span>' : ''}${esc(timeStr)}</span></div>`;
   return h;
 }
@@ -6770,5 +6784,88 @@ body {font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",A
   if(s) s.addEventListener('click',function(){ setTimeout(take,600); });
 })();
 </script>
+
+<style id="reply-wrap-alignment-fix">
+/* Keep wrapped reply text aligned with the sender name, not the avatar. */
+.msg-quote-content { display: block; min-width: 0; }
+.msg-quote-content b, .msg-quote-content > span { display: inline !important; }
+.msg-quote-content > span { white-space: pre-wrap !important; overflow-wrap: anywhere; word-break: normal; }
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .dc-reply {
+  display: flex !important; align-items: flex-start !important; flex-wrap: nowrap !important;
+  white-space: normal !important; overflow: visible !important;
+}
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .dc-reply .dc-qcontent {
+  display: block !important; flex: 1 1 auto !important; min-width: 0 !important;
+  white-space: normal !important; overflow: visible !important;
+}
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .dc-reply .dc-qn,
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .dc-reply .dc-qt {
+  display: inline !important; flex: none !important; max-width: none !important;
+  white-space: pre-wrap !important; overflow: visible !important; text-overflow: clip !important;
+  overflow-wrap: anywhere; word-break: normal;
+}
+.reply-bar-body b, .reply-bar-body span { display: inline !important; }
+.reply-bar-body span { white-space: pre-wrap !important; overflow-wrap: anywhere; word-break: normal; }
+
+
+/* Reply-tag avatar: always crop profile photos into a true circle. */
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .dc-reply .dc-qav {
+  width: 16px !important; height: 16px !important; min-width: 16px !important; min-height: 16px !important;
+  aspect-ratio: 1 / 1 !important; border-radius: 50% !important; overflow: hidden !important;
+  clip-path: circle(50% at 50% 50%) !important; flex: 0 0 16px !important;
+}
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row .dc-reply .dc-qav img {
+  display: block !important; width: 100% !important; height: 100% !important;
+  min-width: 100% !important; min-height: 100% !important; object-fit: cover !important;
+  border-radius: 50% !important;
+}
+
+
+/* Hide only the separator lines between direct-message rows. */
+#directsListContainer .chat-card::after { display: none !important; }
+</style>
+
+
+
+<style id="disable-message-avatar-name-press-v2">
+/* Only disable pressed/tap visual feedback on sender avatar and sender name.
+   Keep message bubbles, swipe gestures, and existing click handlers unchanged. */
+#messagesContainer .chat-message-row .msg-avatar,
+#messagesContainer .chat-message-row .msg-avatar:active,
+#messagesContainer .chat-message-row .msg-avatar:focus,
+#messagesContainer .chat-message-row .msg-avatar:focus-visible,
+#messagesContainer .chat-message-row .msg-avatar img,
+#messagesContainer .chat-message-row .msg-sender-name,
+#messagesContainer .chat-message-row .msg-sender-name:active,
+#messagesContainer .chat-message-row .msg-sender-name:focus,
+#messagesContainer .chat-message-row .msg-sender-name:focus-visible,
+#messagesContainer .chat-message-row .dc-name,
+#messagesContainer .chat-message-row .dc-name:active,
+#messagesContainer .chat-message-row .dc-name:focus,
+#messagesContainer .chat-message-row .dc-name-t,
+#messagesContainer .chat-message-row .dc-name-t:active,
+#messagesContainer .chat-message-row .dc-name-t:focus {
+  transform: none !important;
+  scale: none !important;
+  animation: none !important;
+  transition: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  opacity: 1 !important;
+  -webkit-tap-highlight-color: transparent !important;
+  touch-action: manipulation;
+}
+#messagesContainer .chat-message-row .msg-avatar:active *,
+#messagesContainer .chat-message-row .msg-sender-name:active *,
+#messagesContainer .chat-message-row .dc-name:active * {
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+</style>
+
 </body>
 </html>
