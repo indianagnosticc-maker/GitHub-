@@ -1991,6 +1991,16 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
 
           <!-- Rooms Pane -->
           <div class="pane-col" id="paneRooms">
+            <div class="ai-companion-card" id="btnOpenUpdatesRoom">
+              <div class="ai-companion-icon" style="overflow:hidden;padding:0">
+                <img src="updates_pfp.jpg" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block">
+              </div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:15px;font-weight:600;color:var(--text-main)">Updates</div>
+                <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px">Official announcements</div>
+              </div>
+              <svg viewBox="0 0 24 24" style="color:var(--primary-blue)"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
             <div class="ai-companion-card" id="btnOpenYukiRoom">
               <div class="ai-companion-icon">
                 <svg viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 3.3 2 6.2 5 7.4V20a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2.6c3-1.2 5-4.1 5-7.4a8 8 0 0 0-8-8z"/><path d="M9 10h.01M15 10h.01"/></svg>
@@ -2080,6 +2090,7 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
         <div class="emoji-grid" id="emojiGrid"></div>
       </div>
 
+      <div id="channelReadOnly" style="display:none;padding:14px 16px;text-align:center;font-size:13.5px;color:var(--text-muted);border-top:1px solid rgba(128,128,128,.18)">Only admin can post here</div>
       <div class="composer-inner">
         <button class="composer-btn" id="btnAttachFile" aria-label="Emoji" aria-expanded="false">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2"/><path d="M8.3 14.1c.9 1.35 2.2 2.05 3.7 2.05s2.8-.7 3.7-2.05"/><path d="M9.1 9.6h.01M14.9 9.6h.01" stroke-width="2.6"/></svg>
@@ -2462,6 +2473,19 @@ const $ = id => document.getElementById(id);
 const appShell = $('appShell');
 const msgsBox = $('messagesContainer');
 const YUKI_BOT_UID = '__yuki_ai__';
+const UPDATES_UID = '__updates__';
+const UPDATES_CHAT_ID = 'updates_channel';
+const UPDATES_PFP = 'updates_pfp.jpg'; // yaha koi bhi image link daal sakti ho
+// TODO: apni Firebase UID yaha paste karo (multiple ho to comma se add karo)
+const UPDATES_ADMIN_UIDS = ['i2mKbJUdnSSWTCVsIxIbg8Bg1q22'];
+function isUpdatesAdmin() { return !!(currentUser && UPDATES_ADMIN_UIDS.includes(currentUser.uid)); }
+function setChannelComposer(isChannel) {
+  const ro = document.getElementById('channelReadOnly');
+  const ci = document.querySelector('.composer-inner');
+  const canPost = !isChannel || isUpdatesAdmin();
+  if (ci) ci.style.display = canPost ? '' : 'none';
+  if (ro) ro.style.display = (isChannel && !canPost) ? 'block' : 'none';
+}
 
 /* Avatars & Styling Constants */
 const AV_COLORS = ['#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
@@ -3310,10 +3334,27 @@ function stopChatListeners() {
 
 function openChatView(peerUid, profile = null) {
   _seenMarkKey = '';
+  setChannelComposer(false);
   cancelComposerMode();
   stopChatListeners();
   chatSettleAt = appShell.classList.contains('in-chat') ? 0 : Date.now() + 300;
   appShell.classList.add('in-chat');
+
+  if (peerUid === UPDATES_UID) {
+    activePeer = { uid: UPDATES_UID, username: 'updates', display: 'Updates', photoURL: UPDATES_PFP, isChannel: true };
+    activeChatId = UPDATES_CHAT_ID;
+    $('chatHeaderTitle').textContent = 'Updates';
+    $('chatHeaderSubtitle').textContent = 'Official announcements';
+    $('chatHeaderAvatar').innerHTML = `<img src="${UPDATES_PFP}" alt="Updates" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    $('chatHeaderAvatar').style.background = '#2f6fed';
+    $('searchInput').value = '';
+    $('searchBoxWrap')?.classList.remove('has-value');
+    $('searchResultsView').classList.remove('active');
+    setChannelComposer(true);
+    subscribeToMessages(UPDATES_CHAT_ID);
+    renderDirectsList();
+    return;
+  }
 
   if (peerUid === 'demo_leslie' || peerUid === 'demo_marvin' || peerUid === 'demo_jacob') {
     // Demo offline presentation mode
@@ -3558,7 +3599,7 @@ function renderMessages(chatId, items) {
       hint = document.createElement('p');
       hint.id = 'emptyMsgHint';
       hint.style.cssText = 'text-align:center;color:var(--text-muted);padding:30px 10px;font-size:13.5px';
-      hint.textContent = activePeer?.isYuki ? 'Say hello to BoBo.' : 'No messages yet. Send the first message below.';
+      hint.textContent = activePeer?.isChannel ? 'No updates yet.' : activePeer?.isYuki ? 'Say hello to BoBo.' : 'No messages yet. Send the first message below.';
       typing.before(hint);
     }
     return;
@@ -3637,7 +3678,7 @@ function renderMessages(chatId, items) {
 let _seenMarkKey = '';
 function markChatSeen() {
   try {
-    if (!currentUser || !activePeer || activePeer.isYuki || activePeer.isDemo || !activeChatId) return;
+    if (!currentUser || !activePeer || activePeer.isYuki || activePeer.isDemo || activePeer.isChannel || !activeChatId) return;
     if (document.hidden || !appShell.classList.contains('in-chat')) return;
     const items = msgCache.get(activeChatId) || [];
     if (!items.length) return;
@@ -3663,7 +3704,7 @@ function updateSeenIndicator() {
     const box = $('messagesContainer');
     if (!box) return;
     let target = null, show = false;
-    if (currentUser && activePeer && !activePeer.isYuki && !activePeer.isDemo && activeChatId) {
+    if (currentUser && activePeer && !activePeer.isYuki && !activePeer.isDemo && !activePeer.isChannel && activeChatId) {
       let items = msgCache.get(activeChatId) || [];
       const hid = hiddenSet(activeChatId);
       if (hid.size) items = items.filter(i => !hid.has(i.id));
@@ -3884,6 +3925,7 @@ function cancelComposerMode() {
 $('replyBarClose')?.addEventListener('click', cancelComposerMode);
 
 function startReply(id, msg) {
+  if (activePeer?.isChannel && !isUpdatesAdmin()) return;
   cancelComposerMode();
   replyTarget = { id, by: msg.by, text: fullText(msg.text) };
   showComposerBar('Replying to ' + senderLabel(msg.by), replyTarget.text);
@@ -4049,9 +4091,9 @@ function openMsgMenu(row) {
   const mine = msg.by === currentUser.uid;
   const acts = [];
   if (!msg.deleted) {
-    acts.push(['reply', ICONS.reply, 'Reply']);
+    if (!(activePeer.isChannel && !isUpdatesAdmin())) acts.push(['reply', ICONS.reply, 'Reply']);
     acts.push(['forward', ICONS.forward, 'Forward']);
-    if (mine && canEdit(msg)) acts.push(['edit', ICONS.edit, 'Edit']);
+    if (!activePeer.isChannel || isUpdatesAdmin()) if (mine && canEdit(msg)) acts.push(['edit', ICONS.edit, 'Edit']);
   }
   acts.push(['delme', ICONS.del, 'Delete for me', 1]);
   if (mine && !msg.deleted) acts.push(['delall', ICONS.delall, 'Delete for everyone', 1]);
@@ -4242,6 +4284,26 @@ async function handleSendMessage() {
 
   if (!currentUser || !activeChatId || !activePeer) {
     showToast('Please sign in to send messages');
+    return;
+  }
+
+  if (activePeer.isChannel) {
+    if (!isUpdatesAdmin()) { showToast('Only admin can post here'); return; }
+    input.value = '';
+    input.style.height = '36px';
+    $('btnSendMessage')?.classList.remove('can-send');
+    try {
+      await addDoc(collection(db, 'chats', UPDATES_CHAT_ID, 'messages'), {
+        text, by: currentUser.uid, at: serverTimestamp(), seen: false,
+        ...(replyRef ? { replyTo: replyRef } : {})
+      });
+      await setDoc(doc(db, 'chats', UPDATES_CHAT_ID), {
+        lastMsg: text.slice(0, 80), lastMsgAt: serverTimestamp(), lastMsgBy: currentUser.uid, touchAt: serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.warn('Updates post failed:', e);
+      showToast('Post failed — Firestore rules check karo');
+    }
     return;
   }
 
@@ -4731,6 +4793,7 @@ $('btnChatBack')?.addEventListener('click', () => {
 });
 
 $('btnOpenYukiRoom')?.addEventListener('click', openYukiBotChat);
+$('btnOpenUpdatesRoom')?.addEventListener('click', () => openChatView(UPDATES_UID));
 
 /* Keyboard open/close: the layout jumps to its final size at once (composer stays glued to the keyboard),
    the message list glides with one smooth spring. Same messages stay visible; if you were at the
@@ -4947,7 +5010,7 @@ $('btnDeleteConfirm')?.addEventListener('click', async () => {
 
 /* Context actions in chat drawer */
 $('btnContextBlock')?.addEventListener('click', () => {
-  if (activePeer && !activePeer.isYuki) {
+  if (activePeer && !activePeer.isYuki && !activePeer.isChannel) {
     const isBlocked = (currentProfile?.blockedUids || []).includes(activePeer.uid);
     toggleBlockUser(activePeer.uid, !isBlocked);
     toggleDrawer(false);
