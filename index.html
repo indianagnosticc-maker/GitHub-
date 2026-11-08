@@ -1927,7 +1927,7 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
   <div class="screen" id="screenInbox">
     <!-- Header -->
     <header class="app-header" id="appHeader">
-      <button class="header-profile-btn" id="btnHeaderProfile" aria-label="My Profile" disabled>
+      <button class="header-profile-btn" id="btnHeaderProfile" aria-label="My Profile">
           <div class="av" id="headerProfileAvatar" style="background:#1d72fe">U</div>
         </button>
       <div class="hdr-sep" aria-hidden="true"></div>
@@ -3459,12 +3459,21 @@ function scaffoldMessages(chatId) {
   renderedChatId = chatId;
   renderedRows = new Map();
   chatLoaded = false;
-  box.innerHTML = `
+  box.innerHTML = chatSkelHtml() + `
     <div class="typing-bar" id="typingIndicator">
       <div class="typing-dots"><span></span><span></span><span></span></div>
       <span id="typingLabel">${esc(activePeer?.display || 'Someone')} is typing...</span>
     </div>`;
+  /* skeleton while the chat loads: never longer than 1 second */
+  clearTimeout(window.__skelT);
+  window.__skelT = setTimeout(() => { const k = document.getElementById('chatSkel'); if (k) k.remove(); }, 1000);
   return true;
+}
+function chatSkelHtml() {
+  const w = [[26, 70], [20, 52, 38], [32, 80], [22, 46], [28, 66, 44]];
+  return '<div class="chat-skel" id="chatSkel" aria-hidden="true">' + w.map(r =>
+    '<div class="sk-row"><span class="sk-av"></span><span class="sk-col"><i class="sk-l" style="width:' + r[0] + '%"></i>' +
+    r.slice(1).map(x => '<i class="sk-l" style="width:' + x + '%"></i>').join('') + '</span></div>').join('') + '</div>';
 }
 
 function messageDayKey(ts) {
@@ -3503,7 +3512,7 @@ function dcReplyHtml(msg) {
   const y = !mine && !!(activePeer && activePeer.isYuki && window.YUKI_PFP);
   const av = y ? `<img class="yuki-pfp-img" src="${window.YUKI_PFP}" alt="">` : avatarInner(p, nm);
   const bg = y ? '#f6efe6' : getAvColor((p && p.username) || nm);
-  return `<div class="msg-quote dc-reply" data-reply-id="${esc(msg.replyTo.id)}"><span class="dc-qav" style="background:${bg}">${av}</span><span class="dc-qcontent"><b class="dc-qn">${esc(nm)}</b> <span class="dc-qt">${esc(replyFullText(msg.replyTo))}</span></span></div>`;
+  return `<span class="dc-conn" aria-hidden="true"></span><div class="msg-quote dc-reply" data-reply-id="${esc(msg.replyTo.id)}"><span class="dc-qav" style="background:${bg}">${av}</span><span class="dc-qcontent"><b class="dc-qn">${esc(nm)}</b> <span class="dc-qt">${esc(replyFullText(msg.replyTo))}</span></span></div>`;
 }
 
 function buildMessageRow(id, msg, animate) {
@@ -3538,6 +3547,7 @@ function renderMessages(chatId, items) {
   const typing = $('typingIndicator');
   const initial = !chatLoaded;
   chatLoaded = true;
+  { const _sk = document.getElementById('chatSkel'); if (_sk) _sk.remove(); }
 
   let hint = $('emptyMsgHint');
   if (!items.length) {
@@ -3788,9 +3798,14 @@ const fullText = t => String(t || '').trim().slice(0, 2000);
 function replyFullText(r) {
   try {
     const it = (msgCache.get(activeChatId) || []).find(i => i.id === r.id);
-    if (it && !it.msg.deleted && it.msg.text) return it.msg.text;
+    if (it && !it.msg.deleted && it.msg.text) return replyCap(it.msg.text);
   } catch (e) {}
-  return r.text;
+  return replyCap(r.text);
+}
+/* reply tag inside a sent message shows at most 500 characters */
+function replyCap(t) {
+  t = String(t || '');
+  return t.length > 500 ? t.slice(0, 500).trimEnd() + '…' : t;
 }
 const canEdit = msg => {
   if (!msg || msg.deleted || !currentUser || msg.by !== currentUser.uid) return false;
@@ -4115,7 +4130,7 @@ msgsBox.addEventListener('click', e => {
   tgt.classList.remove('flash');
   void tgt.offsetWidth;
   tgt.classList.add('flash');
-  setTimeout(() => tgt.classList.remove('flash'), 1300);
+  setTimeout(() => tgt.classList.remove('flash'), 2400);
 });
 
 
@@ -6867,5 +6882,316 @@ body {font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",A
 }
 </style>
 
+
+<style id="reply-connector-v1">
+/* Discord-style connector: curved thin line from the avatar up to the reply preview (no-bubble mode only) */
+.msg-bubble-wrap > .dc-conn { display: none; }
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row.grp-start .msg-bubble-wrap > .dc-conn {
+  display: block; grid-column: 1; grid-row: 1; align-self: stretch; justify-self: start;
+  width: 25px; margin: 8px 0 -38px 18px; box-sizing: border-box; pointer-events: none;
+  border-left: 2px solid rgba(127,127,127,.5); border-top: 2px solid rgba(127,127,127,.5);
+  border-top-left-radius: 9px;
+}
+:root[data-p-mav="0"] .msg-bubble-wrap > .dc-conn { display: none !important; }
+/* line runs down behind the avatar so it comes out from under it */
+:root:not([data-p-bub="1"]) .chat-message-row.dc-row.grp-start .msg-bubble-wrap > .dc-av { position: relative; z-index: 1; }
+
+/* Tap on a reply -> original message gets a very light transparent grey highlight (whole row, slow fade) */
+:root .chat-message-row.flash .msg-bubble { animation: none !important; }
+.chat-message-row.flash, .chat-message-row.no-anim.flash { animation: dcJumpFlash 2.2s ease !important; border-radius: 10px; }
+@keyframes dcJumpFlash { 0%, 45% { background: rgba(127,127,127,.10); } 100% { background: rgba(127,127,127,0); } }
+</style>
+<script id="chat-open-pin-v1">
+/* Opening a chat: stay glued to the bottom for a moment (instant, no smooth/odd scrolling) until the user touches the list */
+(function(){
+  var box = document.getElementById('messagesContainer'); if (!box) return;
+  var until = 0, touched = false, raf = 0;
+  function pin(){
+    raf = 0;
+    if (touched || Date.now() > until) return;
+    box.scrollTop = box.scrollHeight;
+    raf = requestAnimationFrame(pin);
+  }
+  function start(ms){ until = Date.now() + ms; touched = false; if (!raf) raf = requestAnimationFrame(pin); }
+  new MutationObserver(function(list){
+    for (var i = 0; i < list.length; i++) {
+      var add = list[i].addedNodes;
+      for (var j = 0; j < add.length; j++) {
+        var n = add[j];
+        if (n.nodeType !== 1) continue;
+        if (n.id === 'typingIndicator') { start(900); return; }                 /* chat switched / opened */
+        if (n.classList.contains('chat-message-row') && box.querySelectorAll('.chat-message-row').length <= add.length) { start(700); return; } /* first batch of messages */
+      }
+    }
+  }).observe(box, { childList: true });
+  ['touchstart','wheel','mousedown'].forEach(function(ev){ box.addEventListener(ev, function(){ touched = true; }, { passive: true }); });
+})();
+</script>
+
+<style id="popup-theme-v1">
+/* ===== Menu settings + Chat settings popup: smaller, app-theme colours, nicer on/off + icon animations ===== */
+#settingsDrawer {
+  --pm-bg: var(--card-bg);
+  --pm-fg: var(--text-main);
+  --pm-sub: var(--text-muted);
+  --pm-press: var(--primary-blue-light);
+  --pm-press: color-mix(in srgb, var(--primary-blue) 10%, transparent);
+  --pm-shadow: 0 10px 30px rgba(15, 23, 42, .16);
+  width: 226px; border: 1px solid var(--border-subtle); border-radius: 16px;
+}
+:root[data-theme="dark"] #settingsDrawer { --pm-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+#settingsDrawer:has(#drawerMainView.hidden) { width: 264px; }
+#settingsDrawer > .drawer-body { padding: 6px 0; }
+#settingsDrawer:has(#drawerMainView.hidden) > .drawer-header { height: 44px; padding: 0 14px; }
+#settingsDrawer #drawerTitle { font-size: 15px; font-weight: 600; }
+#settingsDrawer #btnDrawerBack { width: 34px; height: 34px; }
+#settingsDrawer #btnDrawerBack svg { width: 20px; height: 20px; }
+
+/* rows */
+#settingsDrawer .settings-row {
+  min-height: 42px; padding: 0 14px; gap: 12px;
+  transition: background-color .2s ease !important;
+}
+#settingsDrawer .mp-profile-card .settings-row { min-height: 52px; }
+#settingsDrawer .settings-main-title { font-size: 14px; font-weight: 500; color: var(--text-main); }
+#settingsDrawer .pm-value { font-size: 12.5px; color: var(--text-muted); }
+#settingsDrawer .settings-chevron { width: 18px; height: 18px; }
+
+/* icons: theme blue, dim while the setting is off, smooth colour change */
+#settingsDrawer .settings-icon { width: 20px; height: 20px; color: var(--primary-blue); transition: color .3s ease; }
+#settingsDrawer .settings-icon svg { width: 20px; height: 20px; }
+#settingsDrawer .settings-row:has(> .toggle-switch:not(.on)) > .settings-icon:not(.theme-ico) { color: var(--text-muted); }
+#settingsDrawer .settings-icon.ico-pop { animation: pmIcoSpring .5s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes pmIcoSpring {
+  0% { transform: scale(.7) rotate(-14deg); }
+  55% { transform: scale(1.22) rotate(6deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+/* Dark Mode icon: sun <-> moon turn and cross-fade instead of a hard swap */
+#settingsDrawer .settings-icon.theme-ico svg {
+  position: absolute; inset: 0; display: block !important;
+  transition: transform .5s cubic-bezier(.34, 1.3, .5, 1), opacity .3s ease !important;
+}
+#settingsDrawer .settings-icon.theme-ico .ico-sun { opacity: 1; transform: rotate(0) scale(1); }
+#settingsDrawer .settings-icon.theme-ico .ico-moon { opacity: 0; transform: rotate(-80deg) scale(.4); }
+:root[data-theme="dark"] #settingsDrawer .settings-icon.theme-ico .ico-sun { opacity: 0; transform: rotate(80deg) scale(.4); }
+:root[data-theme="dark"] #settingsDrawer .settings-icon.theme-ico .ico-moon { opacity: 1; transform: rotate(0) scale(1); }
+
+/* on / off switch */
+#settingsDrawer .toggle-switch {
+  width: 32px; height: 19px; border-radius: 10px;
+  transition: background-color .25s ease, box-shadow .25s ease !important;
+}
+#settingsDrawer .toggle-switch::after {
+  top: 3px; left: 3px; width: 13px; height: 13px;
+  transition: transform .32s cubic-bezier(.34, 1.45, .64, 1), width .18s ease;
+}
+#settingsDrawer .toggle-switch.on::after { transform: translateX(13px); }
+#settingsDrawer .settings-row:active .toggle-switch::after { width: 17px; }
+#settingsDrawer .settings-row:active .toggle-switch.on::after { transform: translateX(9px); }
+#settingsDrawer .toggle-switch.on { box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-blue) 16%, transparent); }
+
+/* rows glide in when the popup opens */
+#settingsDrawer.active .settings-row { animation: pmRowIn .3s cubic-bezier(.22, 1, .36, 1) both; }
+#settingsDrawer.active .settings-card > .settings-row:nth-child(2) { animation-delay: .03s; }
+#settingsDrawer.active .settings-card > .settings-row:nth-child(3) { animation-delay: .06s; }
+#settingsDrawer.active .settings-card > .settings-row:nth-child(4) { animation-delay: .09s; }
+#settingsDrawer.active .settings-card > .settings-row:nth-child(5) { animation-delay: .12s; }
+#settingsDrawer.active .settings-card > .settings-row:nth-child(n+6) { animation-delay: .15s; }
+#settingsDrawer.active .settings-card + .settings-card > .settings-row { animation-delay: .1s; }
+@keyframes pmRowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+</style>
+<script id="popup-icon-pop-v1">
+(function(){
+  var d = document.getElementById('settingsDrawer'); if (!d) return;
+  d.addEventListener('click', function(e){
+    var r = e.target.closest && e.target.closest('.settings-row'); if (!r) return;
+    var ic = r.querySelector('.settings-icon'); if (!ic) return;
+    
+    setTimeout(function(){ ic.classList.remove('ico-pop'); }, 520);
+  });
+})();
+</script>
+
+<style id="popup-theme-v2">
+/* a bit bigger again (not so compact) */
+#settingsDrawer { width: 250px; }
+#settingsDrawer:has(#drawerMainView.hidden) { width: 284px; }
+#settingsDrawer > .drawer-body { padding: 8px 0; }
+#settingsDrawer .settings-row { min-height: 47px; padding: 0 16px; gap: 14px; }
+#settingsDrawer .mp-profile-card .settings-row { min-height: 56px; }
+#settingsDrawer .settings-main-title { font-size: 15px; }
+#settingsDrawer .settings-icon, #settingsDrawer .settings-icon svg { width: 22px; height: 22px; }
+
+/* AMOLED: popup is a soft grey instead of near-black */
+:root[data-theme="dark"][data-p-amoled="1"] #settingsDrawer {
+  --pm-bg: #1f1f21; --pm-press: rgba(255, 255, 255, .08);
+  border-color: #313134;
+}
+
+/* icons: plain text colour (no blue), no animation at all */
+#settingsDrawer .settings-icon,
+#settingsDrawer .settings-row:has(> .toggle-switch:not(.on)) > .settings-icon:not(.theme-ico),
+#rowPrefAmoled:has(.toggle-switch.on) .settings-icon,
+#rowPrefAmoled .settings-icon { color: var(--text-main); }
+#settingsDrawer .settings-icon.danger { color: #ef4444; }
+#settingsDrawer .settings-icon,
+#settingsDrawer .settings-icon *,
+#settingsDrawer .settings-row:has(.toggle-switch.on) .settings-icon svg,
+#settingsDrawer .settings-row:has(.toggle-switch.on) .settings-icon * {
+  animation: none !important; transition: none !important;
+}
+#settingsDrawer .settings-row:active .settings-icon svg { transform: none !important; }
+/* sun / moon: plain swap */
+#settingsDrawer .settings-icon.theme-ico svg { position: static; inset: auto; opacity: 1 !important; transform: none !important; }
+#settingsDrawer .settings-icon.theme-ico .ico-moon { display: none !important; }
+:root[data-theme="dark"] #settingsDrawer .settings-icon.theme-ico .ico-sun { display: none !important; }
+:root[data-theme="dark"] #settingsDrawer .settings-icon.theme-ico .ico-moon { display: block !important; }
+</style>
+
+<style id="reply-bar-scroll-v1">
+/* while tagging (above the composer): only ~100 characters (3 lines) visible, longer text scrolls inside */
+.reply-bar-body { max-height: 54px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.reply-bar-body::-webkit-scrollbar { display: none; }
+.reply-bar-body span { max-height: none !important; overflow: visible !important; }
+</style>
+
+<style id="chat-skeleton-v1">
+.chat-skel { display: flex; flex-direction: column; gap: 20px; margin-top: auto; padding: 4px 2px 6px; pointer-events: none; }
+.chat-skel .sk-row { display: flex; align-items: flex-start; gap: 10px; }
+.chat-skel .sk-av, .chat-skel .sk-l {
+  display: block; background: linear-gradient(100deg, rgba(127,127,127,.13) 30%, rgba(127,127,127,.26) 50%, rgba(127,127,127,.13) 70%);
+  background-size: 220% 100%; animation: skShimmer 1.1s linear infinite;
+}
+.chat-skel .sk-av { flex: none; width: 38px; height: 38px; border-radius: 50%; }
+.chat-skel .sk-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; padding-top: 3px; }
+.chat-skel .sk-l { height: 11px; border-radius: 6px; }
+@keyframes skShimmer { from { background-position: 120% 0; } to { background-position: -100% 0; } }
+</style>
+
+<style id="reply-bar-plain-v1">
+/* tag box above the composer: no white left line, no border lines - just a soft transparent box */
+.reply-bar {
+  border: 0 !important; border-left: 0 !important; box-shadow: none !important;
+  background: rgba(127, 127, 127, .14) !important;
+}
+</style>
+
+<style id="msg-menu-soft-v1">
+/* message menu (long-press): no border line, soft shadow, readable in light + dark (+ AMOLED), smooth open/close */
+.msg-menu {
+  border: 0 !important; border-radius: 16px;
+  background: var(--card-bg);
+  box-shadow: 0 8px 30px rgba(15, 23, 42, .2) !important;
+  transform: translateY(6px) scale(.96) !important; transform-origin: top center;
+  transition: opacity .18s ease, transform .22s ease, visibility 0s linear .22s !important;
+}
+.msg-menu.open {
+  transform: none !important;
+  transition: opacity .22s ease, transform .34s cubic-bezier(.22, 1, .36, 1), visibility 0s !important;
+}
+:root[data-theme="dark"] .msg-menu {
+  background: color-mix(in srgb, var(--text-main) 12%, var(--card-bg));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .55) !important;
+}
+:root[data-theme="dark"][data-p-amoled="1"] .msg-menu { background: #1f1f21; }
+.msg-menu-row { border-radius: 10px; transition: background-color .18s ease; }
+.msg-menu-row:active { background: color-mix(in srgb, var(--text-main) 9%, transparent); }
+@media (hover: hover) and (pointer: fine) { .msg-menu-row:hover { background: color-mix(in srgb, var(--text-main) 9%, transparent); } }
+</style>
+
+<style id="dp-popup-v1">
+/* Tap on your DP: Edit Profile opens as a compact popup box (same layout as before, no full page) */
+#settingsDrawer#settingsDrawer.dp-ctx {
+  --pm-bg: var(--card-bg);
+  position: absolute; top: 58px; left: 25px; right: auto; bottom: auto;
+  width: 300px; max-width: calc(100% - 32px); height: auto; max-height: calc(100% - 76px);
+  border-radius: 18px; background: var(--pm-bg);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .18);
+}
+:root[data-theme="dark"] #settingsDrawer#settingsDrawer.dp-ctx { box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+#settingsDrawer.dp-ctx > .drawer-body { padding: 0 0 12px; }
+#settingsDrawer.dp-ctx:has(#drawerMainView.hidden) > .drawer-header { height: 52px; padding: 0 12px 0 14px; justify-content: space-between; }
+#settingsDrawer.dp-ctx .drawer-title-group { gap: 12px; }
+#settingsDrawer.dp-ctx #btnDrawerBack,
+#settingsDrawer.dp-ctx #btnDrawerClose { width: 32px; height: 32px; margin: 0; }
+#settingsDrawer.dp-ctx #btnDrawerBack svg,
+#settingsDrawer.dp-ctx #btnDrawerClose svg { width: 18px; height: 18px; }
+#settingsDrawer.dp-ctx #drawerTitle { font-size: 16px; font-weight: 700; }
+
+#settingsDrawer #drawerProfileView .ep-avatar-wrap { width: 84px; height: 84px; margin: 2px auto 12px; }
+#settingsDrawer #drawerProfileView #subviewProfileAvatar { width: 84px; height: 84px; font-size: 28px; }
+#settingsDrawer #drawerProfileView #btnTriggerPhotoUpload.ep-cam { width: 30px; height: 30px; }
+#settingsDrawer #drawerProfileView #btnTriggerPhotoUpload.ep-cam svg { width: 16px; height: 16px; }
+#settingsDrawer #drawerProfileView .ep-card { padding: 0 16px; }
+#settingsDrawer #drawerProfileView .ep-row { min-height: 46px; gap: 10px; }
+#settingsDrawer #drawerProfileView .ep-label { font-size: 14px; }
+#settingsDrawer #drawerProfileView .ep-input { height: 44px; font-size: 15px; }
+#settingsDrawer #drawerProfileView .ep-tip { padding: 0 16px; margin-top: -2px; font-size: 12px; }
+#settingsDrawer #drawerProfileView .ep-actions { padding: 12px 16px 0; gap: 10px; }
+#settingsDrawer #drawerProfileView .ep-actions button { height: 42px; border-radius: 21px; font-size: 14px; gap: 8px; }
+#settingsDrawer #drawerProfileView .ep-actions button svg { width: 20px; height: 20px; }
+#settingsDrawer #drawerProfileView .ep-save { margin: 12px 16px 0; }
+</style>
+
+<style id="dp-popup-v2">
+/* Edit Profile popup: same clean look as the Settings popup (flat rows, soft buttons, theme colours) */
+#settingsDrawer#settingsDrawer.dp-ctx { width: 280px; border-radius: 16px; }
+:root[data-theme="dark"][data-p-amoled="1"] #settingsDrawer#settingsDrawer.dp-ctx { --pm-bg: #1f1f21; }
+
+/* header: just back arrow + title (like the other popup sub-pages) */
+#settingsDrawer.dp-ctx:has(#drawerMainView.hidden) > .drawer-header { height: 46px; padding: 0 14px; }
+#settingsDrawer.dp-ctx #btnDrawerClose { display: none; }
+#settingsDrawer.dp-ctx #btnDrawerBack { width: 32px; height: 32px; margin: 0 0 0 -6px; background: transparent; }
+#settingsDrawer.dp-ctx #btnDrawerBack:active { background: var(--pm-press); }
+#settingsDrawer.dp-ctx #drawerTitle { font-size: 15px; font-weight: 600; }
+
+/* avatar */
+#settingsDrawer #drawerProfileView .ep-avatar-wrap { width: 68px; height: 68px; margin: 2px auto 8px; }
+#settingsDrawer #drawerProfileView #subviewProfileAvatar { width: 68px; height: 68px; font-size: 24px; }
+#settingsDrawer #drawerProfileView #btnTriggerPhotoUpload.ep-cam {
+  width: 26px; height: 26px; right: -2px; bottom: -2px;
+  background: var(--card-bg); color: var(--text-main);
+  box-shadow: 0 0 0 2px var(--pm-bg), 0 1px 4px rgba(0, 0, 0, .25);
+}
+#settingsDrawer #drawerProfileView #btnTriggerPhotoUpload.ep-cam svg { width: 14px; height: 14px; }
+
+/* fields */
+#settingsDrawer #drawerProfileView .ep-card { padding: 0 16px; }
+#settingsDrawer #drawerProfileView .ep-row { min-height: 44px; }
+#settingsDrawer #drawerProfileView .ep-row:not(:last-child) { border-bottom: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent); }
+#settingsDrawer #drawerProfileView .ep-label { font-size: 13.5px; color: var(--text-muted); }
+#settingsDrawer #drawerProfileView .ep-input { height: 42px; font-size: 15px; color: var(--text-main); }
+#settingsDrawer #drawerProfileView .ep-tip { padding: 0 16px; margin-top: 2px; font-size: 11.5px; color: var(--text-muted); }
+
+/* buttons: original look (grey pill + soft red pill), sized so the text fits */
+#settingsDrawer #drawerProfileView .ep-actions { padding: 12px 16px 0; gap: 8px; }
+#settingsDrawer #drawerProfileView .ep-actions button {
+  height: 40px; border-radius: 20px; padding: 0 6px; gap: 6px;
+  font-size: 13.5px; font-weight: 500; white-space: nowrap; min-width: 0;
+  transition: transform .12s ease-out, filter .2s ease;
+}
+#settingsDrawer #drawerProfileView .ep-actions button svg { width: 18px; height: 18px; flex: none; }
+#settingsDrawer #drawerProfileView .ep-actions .ep-logout { background: #f3f5fa; color: var(--text-main); }
+#settingsDrawer #drawerProfileView .ep-actions .ep-del { background: #fde8e8; color: #e60000; }
+:root[data-theme="dark"] #settingsDrawer #drawerProfileView .ep-actions .ep-logout { background: rgba(255, 255, 255, .1); }
+:root[data-theme="dark"] #settingsDrawer #drawerProfileView .ep-actions .ep-del { background: rgba(230, 0, 0, .18); color: #ff6b6b; }
+#settingsDrawer > .drawer-body { padding-bottom: 14px; }
+</style>
+
+
+<style id="no-tap-anim-users-v1">
+/* tapping another user's DP or name (chat header + chat list): no press / scale animation */
+.chat-contact-info, .chat-contact-info:active,
+.chat-header-avatar, .chat-header-avatar:active,
+.chat-card-avatar, .chat-card-avatar:active,
+.chat-card-name, .chat-card-name:active,
+#chatHeaderTitle, #chatHeaderTitle:active, #chatHeaderSubtitle, #chatHeaderSubtitle:active {
+  transform: none !important; scale: none !important; filter: none !important;
+  transition: none !important; animation: none !important;
+  -webkit-tap-highlight-color: transparent !important; outline: none !important;
+}
+</style>
 </body>
 </html>
