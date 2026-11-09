@@ -1931,7 +1931,7 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
           <div class="av" id="headerProfileAvatar" style="background:#1d72fe">U</div>
         </button>
       <div class="hdr-sep" aria-hidden="true"></div>
-      
+      <div class="hdr-title" aria-hidden="true"><span>Yuki</span></div>
       <div class="header-actions">
         <button class="action-btn-circle" id="btnToggleSearch" aria-label="Search" title="Search" aria-expanded="false">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -1976,18 +1976,6 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
       </div>
     </header>
 
-    <!-- Bottom bar: Home / Room -->
-    <nav class="bottom-bar" id="bottomBar" aria-label="Sections">
-      <button class="bb-item on" data-go="0" aria-label="Home">
-        <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10"/></svg>
-        <span>Home</span><i class="bb-dot" id="bbDot"></i>
-      </button>
-      <button class="bb-item" data-go="1" aria-label="Room">
-        <svg viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4.5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>
-        <span>Room</span>
-      </button>
-    </nav>
-
     <!-- Scrollable Inbox List -->
     <div class="inbox-scroll-body">
       <!-- Search Results Dropdown -->
@@ -2008,7 +1996,7 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
                 <img src="data:image/jpeg;base64,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" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block">
               </div>
               <div style="flex:1;min-width:0">
-                <div style="font-size:15px;font-weight:500;color:var(--text-main)">Updates</div>
+                <div style="font-size:15px;font-weight:600;color:var(--text-main)">Updates</div>
                 <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px">Official announcements</div>
               </div>
               <svg viewBox="0 0 24 24" style="color:var(--primary-blue)"><path d="m9 18 6-6-6-6"/></svg>
@@ -2018,7 +2006,7 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
                 <svg viewBox="0 0 24 24"><path d="M12 2a8 8 0 0 0-8 8c0 3.3 2 6.2 5 7.4V20a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-2.6c3-1.2 5-4.1 5-7.4a8 8 0 0 0-8-8z"/><path d="M9 10h.01M15 10h.01"/></svg>
               </div>
               <div style="flex:1;min-width:0">
-                <div style="font-size:15px;font-weight:500;color:var(--text-main)">BoBo</div>
+                <div style="font-size:15px;font-weight:600;color:var(--text-main)">BoBo</div>
                 <div style="font-size:12.5px;color:var(--text-muted);margin-top:2px">Ask questions, debug code, or chat 24/7</div>
               </div>
               <svg viewBox="0 0 24 24" style="color:var(--primary-blue)"><path d="m9 18 6-6-6-6"/></svg>
@@ -2030,6 +2018,33 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
 
     
     
+    <!-- ==========================================
+         BOTTOM NAVIGATION (glass / mirror blur)
+         ========================================== -->
+    <nav id="botNav" aria-label="Main navigation">
+      <span class="bn-ind" aria-hidden="true"></span>
+      <button type="button" id="bnHome" class="act" aria-label="Home">
+        <span class="bn-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.8 12 3.8l8.5 7M5.5 9.5V19a1.5 1.5 0 0 0 1.5 1.5h2.8v-5.2a1 1 0 0 1 1-1h2.4a1 1 0 0 1 1 1v5.2H17a1.5 1.5 0 0 0 1.5-1.5V9.5"/></svg></span>
+        <span class="bn-lb">Home</span>
+      </button>
+      <button type="button" id="bnRoom" aria-label="Room">
+        <span class="bn-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span>
+        <span class="bn-lb">Room</span>
+      </button>
+      <button type="button" id="bnProfile" aria-label="Profile">
+        <span class="bn-ic"><span class="bn-pfp"><img id="bnPfpImg" alt="" decoding="async" style="display:none"></span></span>
+        <span class="bn-lb">Profile</span>
+      </button>
+      <button type="button" id="bnSettings" aria-label="Settings">
+        <span class="bn-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <span class="bn-lb">Settings</span>
+      </button>
+      <button type="button" id="bnUpdate" aria-label="Update">
+        <span class="bn-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></span>
+        <span class="bn-lb">Update</span>
+      </button>
+    </nav>
+
   </div>
 
   <!-- ==========================================
@@ -2183,6 +2198,11 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
               <div class="settings-info"><span class="settings-main-title">Compact Chat List</span></div>
               <div class="toggle-switch" data-sw></div>
             </div>
+            <div class="settings-row pm-pref" id="rowPrefBubbles" data-pref="bub" data-type="toggle">
+              <span class="settings-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path class="ic-bub" d="M5.5 5h13A1.5 1.5 0 0 1 20 6.5v8a1.5 1.5 0 0 1-1.5 1.5H12l-4.5 3.6V16h-2A1.5 1.5 0 0 1 4 14.5v-8A1.5 1.5 0 0 1 5.5 5z"/><path d="M8.5 10.2h7"/></svg></span>
+              <div class="settings-info"><span class="settings-main-title">Show Bubbles</span></div>
+              <div class="toggle-switch" data-sw></div>
+            </div>
             <div class="settings-row pm-pref" id="rowPrefHaptics" data-pref="hp" data-type="toggle">
               <span class="settings-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3.8" width="8" height="16.4" rx="2"/><path class="ic-w ic-wl1" d="M4.6 9v6"/><path class="ic-w ic-wr1" d="M19.4 9v6"/><path class="ic-w ic-wl2" d="M2.2 10.8v2.4"/><path class="ic-w ic-wr2" d="M21.8 10.8v2.4"/></svg></span>
               <div class="settings-info"><span class="settings-main-title">Vibration Feedback</span></div>
@@ -2241,6 +2261,16 @@ body, .device-wrapper { height: var(--app-h, 100dvh); }
             <div class="settings-row pm-pref" id="rowChatAvatars" data-pref="mav" data-type="toggle">
               <span class="settings-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle class="ic-head" cx="12" cy="8.6" r="3.5"/><path d="M5 20c.8-3.8 3.6-5.7 7-5.7s6.2 1.9 7 5.7"/></svg></span>
               <div class="settings-info"><span class="settings-main-title">Message Avatars</span></div>
+              <div class="toggle-switch" data-sw></div>
+            </div>
+            <div class="settings-row pm-pref" id="rowChatBubbles" data-pref="bub" data-type="toggle">
+              <span class="settings-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path class="ic-bub" d="M5.5 5h13A1.5 1.5 0 0 1 20 6.5v8a1.5 1.5 0 0 1-1.5 1.5H12l-4.5 3.6V16h-2A1.5 1.5 0 0 1 4 14.5v-8A1.5 1.5 0 0 1 5.5 5z"/><path d="M8.5 10.2h7"/></svg></span>
+              <div class="settings-info"><span class="settings-main-title">Show Bubbles</span></div>
+              <div class="toggle-switch" data-sw></div>
+            </div>
+            <div class="settings-row pm-pref" id="rowChatCompact" data-pref="cb" data-type="toggle">
+              <span class="settings-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path class="ic-bub" d="M5.5 5h13A1.5 1.5 0 0 1 20 6.5v8a1.5 1.5 0 0 1-1.5 1.5H12l-4.5 3.6V16h-2A1.5 1.5 0 0 1 4 14.5v-8A1.5 1.5 0 0 1 5.5 5z"/></svg></span>
+              <div class="settings-info"><span class="settings-main-title">Compact Bubbles</span></div>
               <div class="toggle-switch" data-sw></div>
             </div>
             </div>
@@ -5222,7 +5252,6 @@ body { top: 0; left: 0; right: 0; }
     var saved=JSON.parse(localStorage.getItem(KEY)||'{}');
     for(k in DEF) if(typeof saved[k]==='number') P[k]=saved[k];
   }catch(e){}
-  P.bub=0; P.cb=0; /* bubble settings removed: always flat (Reddit/Discord style) */
   var NAMES={
     fs:['Small','Medium','Large'],
     accent:['Ocean','Royal','Sky','Indigo']
@@ -6403,79 +6432,6 @@ body {font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",A
 #appHeader .header-actions > button {width:38px;height:38px}
 .hdr-ind {position:absolute;left:0;bottom:-9px;width:20px;height:3px;border-radius:3px;background:var(--primary-blue);opacity:0;transform:translateX(0);pointer-events:none;transition:transform .42s cubic-bezier(.22,1,.36,1),opacity .2s ease}
 .hdr-ind.on {opacity:1}
-
-/* ===== v8: floating pill header (round sides) + round soft circles on every icon, no border line ===== */
-#appHeader.app-header {
-  margin: 10px 12px 4px !important;
-  height: 64px !important;
-  border-radius: 999px !important;
-  padding: 0 12px !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  overflow: visible;
-}
-#appHeader .hdr-layer { padding: 0 12px !important; border-radius: 999px; }
-#appHeader .header-actions { gap: 8px !important; margin-right: 0 !important; }
-#appHeader .header-actions > #btnToggleSearch,
-#appHeader .header-actions > #btnToggleSlide,
-#appHeader .header-actions > #btnToggleTheme,
-#appHeader .header-actions > #btnOpenSettings,
-#appHeader #btnSearchToSlide,
-#appHeader #btnSlideToSearch {
-  width: 42px !important; height: 42px !important;
-  border-radius: 50% !important;
-  background: var(--hdr-btn) !important;
-  border: 0 !important; outline: 0 !important; box-shadow: none !important;
-}
-#appHeader .header-actions > #btnToggleSearch:active,
-#appHeader .header-actions > #btnToggleSlide:active,
-#appHeader .header-actions > #btnToggleTheme:active,
-#appHeader .header-actions > #btnOpenSettings:active,
-#appHeader #btnSearchToSlide:active,
-#appHeader #btnSlideToSearch:active {
-  background: var(--hdr-btn-press) !important;
-}
-
-/* ===== v9: pill header must be visible as its own rounded box on every theme ===== */
-:root #appHeader.app-header { background: #f1f4f9 !important; box-shadow: 0 2px 10px rgba(15,23,42,.08) !important; border-radius: 999px !important; }
-:root[data-p-amoled="1"]:not([data-theme="dark"]) #appHeader.app-header { background: #f2f2f2 !important; }
-:root[data-theme="dark"] #appHeader.app-header { background: #1a2236 !important; box-shadow: none !important; }
-:root[data-theme="dark"][data-p-amoled="1"] #appHeader.app-header { background: #121212 !important; }
-
-/* ===== v10: smaller + thinner pill header, airy spacing like reference ===== */
-#appHeader.app-header { height: 50px !important; margin: 8px 7px 4px !important; padding: 0 8px 0 8px !important; }
-#appHeader > .header-profile-btn { width: 34px !important; height: 34px !important; border-width: 1.5px !important; padding: 1px !important; flex: none; }
-#appHeader .hdr-sep { height: 20px !important; margin: 0 16px 0 10px !important; }
-#appHeader .hdr-title { font-size: 17px !important; }
-#appHeader .header-actions { gap: 6px !important; }
-#appHeader .header-actions > button#btnToggleSearch,
-#appHeader .header-actions > button#btnToggleSlide,
-#appHeader .header-actions > button#btnToggleTheme,
-#appHeader .header-actions > button#btnOpenSettings,
-#appHeader button#btnSearchToSlide,
-#appHeader button#btnSlideToSearch { width: 34px !important; height: 34px !important; }
-#appHeader .header-actions > button#btnToggleSearch > svg,
-#appHeader .header-actions > button#btnToggleSlide > svg,
-#appHeader .header-actions > button#btnToggleTheme .theme-sky,
-#appHeader .header-actions > button#btnToggleTheme .theme-sky > svg,
-#appHeader .header-actions > button#btnOpenSettings > svg,
-#appHeader button#btnSearchToSlide > svg,
-#appHeader button#btnSlideToSearch > svg { width: 18px !important; height: 18px !important; }
-#appHeader .hdr-layer { padding: 0 8px !important; gap: 6px !important; }
-#appHeader .hdr-layer #searchBoxWrap,
-#appHeader .hdr-layer #inboxTabBar { height: 36px !important; }
-
-/* ===== v11: LIGHT mode header: neutral (no bluish tint), hairline border + soft neutral shadow ===== */
-:root:not([data-theme="dark"]) { --hdr-btn: rgba(0, 0, 0, 0.05); --hdr-btn-press: rgba(0, 0, 0, 0.10); --hdr-ico: #111111; }
-:root:not([data-theme="dark"]) #appHeader.app-header,
-:root[data-p-amoled="1"]:not([data-theme="dark"]) #appHeader.app-header {
-  background: #ffffff !important;
-  border: 0.5px solid rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px -4px rgba(0, 0, 0, 0.10) !important;
-}
-
-/* ===== v12: header title replaced by a small home icon ===== */
-#appHeader .hdr-title svg { width: 21px !important; height: 21px !important; margin: 0 !important; stroke: var(--hdr-ico) !important; stroke-width: 1.9 !important; fill: none !important; }
 </style>
 <script id="hdrPopJs">
 (function(){
@@ -6484,8 +6440,9 @@ body {font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",A
   var HOME='<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5M5.5 10v9.5h13V10"/></svg>';
   var box=document.getElementById('btnToggleSlide');
   var home=document.createElement('button'); home.className='action-btn-circle'; home.id='btnHdrHome';
-  home.setAttribute('aria-label','Home'); home.title='Home'; home.innerHTML=HOME; /* home icon removed from header */
+  home.setAttribute('aria-label','Home'); home.title='Home'; home.innerHTML=HOME; acts.insertBefore(home,acts.firstChild);
   var s2=document.getElementById('btnSearchToSlide');
+  if(s2){ s2.innerHTML=HOME; s2.setAttribute('aria-label','Home'); s2.title='Home'; }
   var ind=document.createElement('span'); ind.className='hdr-ind'; acts.appendChild(ind);
   var pop=document.createElement('div'); pop.className='hdr-pop'; pop.id='hdrPop'; pop.setAttribute('role','menu');
   pop.innerHTML='<button class="hdr-pop-item" data-go="0" role="menuitem">'+HOME+'<span>Home</span></button>'+
@@ -6511,8 +6468,9 @@ body {font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",A
     pop.classList.toggle('open',v);
     box.setAttribute('aria-expanded',v?'true':'false');
   }
-  box.addEventListener('click',function(e){ e.stopPropagation(); setOpen(!open); });
+  box.addEventListener('click',function(e){ e.stopPropagation(); setOpen(false); go(1); });
   home.addEventListener('click',function(){ setOpen(false); go(0); });
+  if(s2) s2.addEventListener('click',function(){ go(0); });
   pop.addEventListener('click',function(e){
     var it=e.target.closest('.hdr-pop-item'); if(!it) return;
     go(it.getAttribute('data-go')); setOpen(false);
@@ -7353,6 +7311,7 @@ body {font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",A
   display: inline !important; flex: none !important; max-width: none !important;
 }
 </style>
+<style id="no-hdr-pop">#hdrPop{display:none!important}</style>
 <style id="chat-header-amoled-black">
 /* AMOLED: chat header is pure black (blur / glass logic untouched) with a thin faint divider */
 :root[data-theme="dark"][data-p-amoled="1"] #screenChat > .chat-top-header {
@@ -7397,222 +7356,246 @@ body {font-family:"Roboto",system-ui,-apple-system,"Segoe UI","Helvetica Neue",A
 }
 #drawerProfileView .ep-actions button svg { display: none !important; }
 </style>
-<style id="lighter-fonts-v1">
-/* Roboto is loaded only in 400 / 500 / 700, so every "600" was rendering as full bold 700.
-   Names -> 500 (Medium), settings text -> 400 (Regular) = lighter, sharper look. */
-body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
-.chat-card-name, .dc-name-t, .dc-name, .chat-header-meta b, #chatHeaderTitle, #modalContactName,
-.msg-sender-name, .fwd-name, .dc-reply .dc-qn, .msg-quote b, .reply-bar-body b,
-.ai-companion-card b, .inbox-tab, #inboxTabBar .inbox-tab.active, .hdr-layer #inboxTabBar .inbox-tab.active,
-.profile-pill-btn, .auth-btn-primary, b, strong, h1, h2, h3 { font-weight: 500 !important; }
-#settingsDrawer .settings-main-title, #settingsDrawer .pm-value, #settingsDrawer .ep-label,
-#settingsDrawer #blockedUsersContainer b { font-weight: 400 !important; }
-#settingsDrawer #drawerTitle, #settingsDrawer.dp-ctx #drawerTitle { font-weight: 500 !important; }
-</style>
-<style id="clean-ui-v1">
-/* ===== Clean layout: simple header (avatar | search, theme, menu) + floating bottom bar (Home / Room) ===== */
-#appHeader .hdr-sep, #appHeader .hdr-title,
-#appHeader #btnToggleSlide, #appHeader #btnSearchToSlide, #hdrPop { display: none !important; }
 
-.bottom-bar {
-  position: absolute; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%); z-index: 25;
-  display: flex; align-items: center; gap: 6px; padding: 6px;
-  border-radius: 999px; box-sizing: border-box;
-  background: #ffffff;
-  border: 0.5px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 16px -4px rgba(0, 0, 0, 0.14);
-  transition: opacity .2s ease, visibility 0s;
-}
-:root[data-theme="dark"] .bottom-bar { background: #1a2236; border-color: transparent; box-shadow: 0 6px 18px -6px rgba(0,0,0,.5); }
-:root[data-theme="dark"][data-p-amoled="1"] .bottom-bar { background: #121212; }
-#appHeader.mode-search ~ .bottom-bar { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .15s ease, visibility 0s linear .15s; }
+<style id="botNavCss">
+#screenInbox { --bn-h: 48px; --bn-lift: 12px; }
 
-.bb-item {
-  position: relative; display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 104px; height: 44px; padding: 0; border: 0; border-radius: 999px;
-  background: transparent; color: var(--text-muted);
-  font: inherit; font-size: 14px; font-weight: 500; letter-spacing: 0;
-  -webkit-tap-highlight-color: transparent; cursor: pointer;
-  transition: background-color .2s ease, color .2s ease, transform .12s ease-out;
+/* ===== top header removed: only the floating theme + 3-dot buttons stay ===== */
+#screenInbox #appHeader {
+  position: absolute; top: 0; left: 0; right: 0; height: 0; min-height: 0; padding: 0;
+  background: transparent !important; border: 0 !important; box-shadow: none !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  pointer-events: none; z-index: 30; overflow: visible;
 }
-.bb-item svg { width: 21px; height: 21px; stroke-width: 1.8; }
-.bb-item:active { transform: scale(.96); }
-.bb-item.on { background: var(--hdr-btn); color: var(--hdr-ico); }
-.bb-dot {
-  position: absolute; top: 9px; left: 30px; width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent-red); box-shadow: 0 0 0 2px var(--app-bg); display: none;
+#screenInbox #appHeader > .header-profile-btn,
+#screenInbox #appHeader > .hdr-sep,
+#screenInbox #appHeader .hdr-ind,
+#screenInbox #hdrPop,
+#screenInbox #hdrSlideLayer,
+#screenInbox #btnToggleSlide,
+#screenInbox #btnOpenSettings,
+#screenInbox #btnHdrHome,
+#screenInbox #btnSearchToSlide { display: none !important; }
+
+#screenInbox #appHeader .header-actions {
+  position: absolute !important; top: calc(env(safe-area-inset-top, 0px) + 8px); right: 12px; left: auto;
+  margin: 0 !important; display: flex; gap: 8px !important; pointer-events: auto;
 }
-.bb-dot.show { display: block; }
+#screenInbox #appHeader.mode-search .header-actions { pointer-events: none; }
+#screenInbox #appHeader .header-actions > button#btnToggleTheme,
+#screenInbox #appHeader .header-actions > button#btnToggleSearch {
+  width: 38px !important; height: 38px !important; border-radius: 50% !important; border: 0 !important;
+  background: transparent !important; box-shadow: none !important;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+/* soft fade behind the top row so scrolled content never runs into the icons / title */
+#screenInbox #appHeader::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; z-index: -1; pointer-events: none;
+  height: calc(env(safe-area-inset-top, 0px) + 58px);
+  background: linear-gradient(var(--app-bg) 55%, transparent);
+}
+/* left side: app name, balances the two icons on the right */
+#screenInbox #appHeader > .hdr-title {
+  display: flex !important; position: absolute; left: 18px; top: calc(env(safe-area-inset-top, 0px) + 8px);
+  height: 38px; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.3px; pointer-events: none;
+}
+#screenInbox #appHeader .header-actions > button#btnToggleTheme { order: 1; }
+#screenInbox #appHeader .header-actions > button#btnToggleSearch { order: 2; color: var(--icon-fg); }
+
+/* search bar floats at the top when Search is tapped */
+#screenInbox #appHeader #hdrSearchLayer {
+  inset: auto; top: calc(env(safe-area-inset-top, 0px) + 8px); left: 0; right: 0; bottom: auto;
+  height: 48px; padding: 0 14px;
+}
+#screenInbox #appHeader .hdr-layer #searchBoxWrap { height: 44px; }
+
+#screenInbox #paneRooms { padding-top: 0; }
+/* list starts below the floating buttons and scrolls under them / under the bar */
+#screenInbox .inbox-scroll-body {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 54px);
+  padding-bottom: calc(var(--bn-h) + var(--bn-lift) + env(safe-area-inset-bottom, 0px) + 20px);
+}
+
+/* ===== bottom bar: slim, full width, glass / mirror blur ===== */
+#botNav {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 25;
+  height: calc(var(--bn-h) + var(--bn-lift) + env(safe-area-inset-bottom, 0px));
+  display: flex; align-items: stretch; justify-content: space-around;
+  padding: 0 4px env(safe-area-inset-bottom, 0px);
+  border-radius: 18px 18px 0 0;
+  background: rgba(255, 255, 255, 0.58);
+  -webkit-backdrop-filter: blur(26px) saturate(1.9);
+          backdrop-filter: blur(26px) saturate(1.9);
+  border: 0; border-top: 0.5px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 -8px 24px -12px rgba(0, 0, 0, 0.12), inset 0 0.5px 0 rgba(255, 255, 255, 0.8);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1);
+  --bn-on: #0f0f0f; --bn-off: #7d7d7d; --bn-ring: rgba(0, 0, 0, 0.12);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  #botNav { background: rgba(255, 255, 255, 0.97); }
+}
+:root[data-theme="dark"] #botNav {
+  background: rgba(24, 24, 24, 0.55);
+  border-top-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -8px 24px -12px rgba(0, 0, 0, 0.6), inset 0 0.5px 0 rgba(255, 255, 255, 0.07);
+  --bn-on: #ffffff; --bn-off: #9a9a9a; --bn-ring: rgba(255, 255, 255, 0.2);
+}
+:root[data-theme="dark"][data-p-amoled="1"] #botNav { background: rgba(10, 10, 10, 0.55); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root[data-theme="dark"] #botNav { background: rgba(18, 18, 18, 0.97); }
+}
+#botNav.bn-hide { transform: translateY(105%); }
+
+#botNav button {
+  flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: 0; background: none; border: 0; border-radius: 0;
+  color: var(--bn-off);
+  font-size: 10px; line-height: 12px; font-weight: 500; letter-spacing: .1px;
+  transition: color .25s ease, transform .18s ease;
+  touch-action: manipulation; -webkit-user-select: none; user-select: none;
+}
+#botNav button.act { color: var(--bn-on); font-weight: 600; }
+#botNav button:active { transform: scale(.93); }
+#botNav .bn-ic { width: 24px; height: 24px; display: grid; place-items: center; }
+#botNav svg {
+  width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6;
+  stroke-linecap: round; stroke-linejoin: round; shape-rendering: geometricPrecision;
+  transition: stroke-width .25s ease;
+}
+#botNav button.act svg { stroke-width: 1.9; }
+/* small slider line on the active tab, glides between Home and Room */
+#botNav .bn-ind {
+  position: absolute; top: 0; left: 0; width: 20px; height: 2.5px; border-radius: 0 0 3px 3px;
+  background: var(--bn-on); opacity: 0; pointer-events: none;
+  transition: transform .4s cubic-bezier(.22, 1, .36, 1), opacity .2s ease;
+}
+/* user's profile picture, centre of the bar */
+#botNav .bn-pfp {
+  width: 24px; height: 24px; border-radius: 50%; overflow: hidden; display: block;
+  background: rgba(127, 127, 127, 0.28); box-shadow: 0 0 0 1px var(--bn-ring);
+}
+#botNav .bn-pfp img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ===== profile + settings popups: bottom sheet, slides up on open and down on close (chat settings keeps its small card) =====
+   Older popup rules use !important / doubled ids, so these match them (doubled id + !important). */
+#settingsDrawer#settingsDrawer:not(.card-mode) {
+  position: absolute !important; top: auto !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+  width: 100% !important; max-width: none !important; height: auto !important; max-height: min(86%, 640px) !important;
+  border-radius: 22px 22px 0 0 !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.18) !important;
+  transform-origin: 50% 100%;
+  transform: translateY(100%) !important; opacity: 1 !important;
+  visibility: hidden; pointer-events: none;
+  transition: transform .38s cubic-bezier(.22, 1, .36, 1), visibility 0s linear .38s !important;
+}
+#settingsDrawer#settingsDrawer:not(.card-mode).active {
+  transform: none !important; visibility: visible; pointer-events: auto;
+  transition: transform .38s cubic-bezier(.22, 1, .36, 1), visibility 0s !important;
+}
+#settingsDrawer#settingsDrawer:not(.card-mode)::before {
+  content: ""; display: block; flex: none; width: 36px; height: 4px; border-radius: 2px;
+  margin: 8px auto 0; background: var(--pm-sub); opacity: .35;
+}
+:root[data-theme="dark"] #settingsDrawer#settingsDrawer:not(.card-mode) { box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5) !important; }
+@media (min-width: 900px) {
+  #settingsDrawer#settingsDrawer:not(.card-mode) {
+    left: 16px !important; right: auto !important; bottom: 16px !important;
+    width: calc(var(--inbox-w, 360px) - 32px) !important; border-radius: 18px !important; padding-bottom: 0;
+  }
+}
 </style>
-<script id="bottomBarJs">
+
+<script id="botNavJs">
 (function(){
-  var bar=document.getElementById('bottomBar'); if(!bar) return;
-  var btns=[].slice.call(bar.querySelectorAll('.bb-item'));
-  function cur(){ var a=document.querySelector('.inbox-tab.active'); return a?a.getAttribute('data-tab'):'0'; }
-  function sync(){ var c=cur(); btns.forEach(function(b){ var on=b.getAttribute('data-go')===c; b.classList.toggle('on',on); b.setAttribute('aria-current',on?'page':'false'); }); }
-  btns.forEach(function(b){ b.addEventListener('click',function(){
-    var t=document.querySelector('.inbox-tab[data-tab="'+b.getAttribute('data-go')+'"]'); if(t) t.click();
-  }); });
-  var mo=new MutationObserver(sync);
-  [].forEach.call(document.querySelectorAll('.inbox-tab'),function(t){ mo.observe(t,{attributes:true,attributeFilter:['class']}); });
-  /* red dot on Home while Directs has unread messages */
-  var badge=document.getElementById('directsUnreadBadge'), dot=document.getElementById('bbDot');
-  function dotSync(){ if(!badge||!dot) return; var t=badge.textContent.trim(); dot.classList.toggle('show', badge.style.display!=='none' && t!=='' && t!=='0'); }
-  if(badge){ new MutationObserver(dotSync).observe(badge,{attributes:true,childList:true,characterData:true,subtree:true}); dotSync(); }
+  var $ = function(i){ return document.getElementById(i); };
+  var nav = $('botNav'), hdr = $('appHeader'), scr = $('screenInbox');
+  if (!nav || !hdr || !scr) return;
+  var B = { home: $('bnHome'), room: $('bnRoom'), settings: $('bnSettings'), update: $('bnUpdate'), profile: $('bnProfile') };
+
+  function curTab(){ var a = document.querySelector('.inbox-tab.active'); return a ? a.getAttribute('data-tab') : '0'; }
+  function searching(){ return hdr.classList.contains('mode-search'); }
+  function goTab(n){ var t = document.querySelector('.inbox-tab[data-tab="' + n + '"]'); if (t) t.click(); }
+  function closeBars(){ if (searching()) document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); }
+  function toTop(){ var s = scr.querySelector('.inbox-scroll-body'); if (s) s.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+  function sync(){
+    var s = searching(), t = curTab();
+    B.home.classList.toggle('act', !s && t === '0');
+    B.room.classList.toggle('act', !s && t === '1');
+    place();
+  }
+  var ind = nav.querySelector('.bn-ind'), placed = false;
+  function place(){
+    var a = nav.querySelector('button.act');
+    if (!ind || !a || !a.offsetWidth) { if (ind) ind.style.opacity = 0; return; }
+    var x = a.offsetLeft + (a.offsetWidth - ind.offsetWidth) / 2;
+    if (!placed) { ind.style.transition = 'none'; ind.style.transform = 'translateX(' + x + 'px)'; void ind.offsetWidth; ind.style.transition = ''; placed = true; }
+    else ind.style.transform = 'translateX(' + x + 'px)';
+    ind.style.opacity = 1;
+  }
+  window.addEventListener('resize', place);
+  if (window.ResizeObserver) new ResizeObserver(place).observe(nav);
+
+  B.home.addEventListener('click', function(){
+    var was = !searching() && curTab() === '0';
+    closeBars(); goTab(0); sync();
+    if (was) toTop();
+  });
+  B.room.addEventListener('click', function(){
+    var was = !searching() && curTab() === '1';
+    closeBars(); goTab(1); sync();
+    if (was) toTop();
+  });
+  B.settings.addEventListener('click', function(){ var b = $('btnOpenSettings'); if (b) b.click(); });
+  /* top-right Search button: open the bar and bring the keyboard up in the same tap */
+  var tS = $('btnToggleSearch');
+  if (tS) tS.addEventListener('click', function(){
+    var inp = $('searchInput');
+    if (inp) { inp.focus(); setTimeout(function(){ if (document.activeElement !== inp) inp.focus(); }, 120); }
+  });
+  B.update.addEventListener('click', function(){ var b = $('btnOpenUpdatesRoom'); if (b) b.click(); });
+  B.profile.addEventListener('click', function(){ var b = $('btnHeaderProfile'); if (b) b.click(); });
+
+  /* highlight follows the app (tab swipes, search open/close) */
+  var mo = new MutationObserver(sync);
+  [].forEach.call(document.querySelectorAll('.inbox-tab'), function(t){ mo.observe(t, { attributes: true, attributeFilter: ['class'] }); });
+  mo.observe(hdr, { attributes: true, attributeFilter: ['class'] });
+
+  /* user's pfp mirrors the (now hidden) header avatar, so it always matches the profile */
+  var pimg = $('bnPfpImg'), psrc = $('btnHeaderProfile');
+  function pfp(){
+    var i = psrc && psrc.querySelector('img'), s = i && i.getAttribute('src');
+    if (s) { if (pimg.getAttribute('src') !== s) pimg.setAttribute('src', s); pimg.style.display = 'block'; }
+    else pimg.style.display = 'none';
+  }
+  if (psrc) new MutationObserver(pfp).observe(psrc, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+  pfp(); setTimeout(pfp, 1500);
+
+  /* keyboard open (search box) -> slide the bar away so it does not ride on top of the keyboard */
+  var mq = window.matchMedia ? window.matchMedia('(max-width: 899px)') : { matches: true };
+  function isField(el){ return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable); }
+  document.addEventListener('focusin', function(e){
+    if (mq.matches && isField(e.target) && scr.contains(e.target)) nav.classList.add('bn-hide');
+  });
+  document.addEventListener('focusout', function(e){
+    if (isField(e.target)) setTimeout(function(){ if (!isField(document.activeElement)) nav.classList.remove('bn-hide'); }, 60);
+  });
+
+  var dr = $('settingsDrawer');
+  function popMode(card){
+    if (!dr || dr.classList.contains('active') || dr.classList.contains('card-mode') === card) return;
+    dr.style.setProperty('transition', 'none', 'important'); dr.classList.toggle('card-mode', card); void dr.offsetWidth; dr.style.removeProperty('transition');
+  }
+  document.addEventListener('click', function(e){
+    var t = e.target && e.target.closest ? e.target : null; if (!t) return;
+    if (t.closest('#btnChatSettingsGear')) popMode(true);
+    else if (t.closest('#btnOpenSettings, #btnHeaderProfile, #btnNavSettings')) popMode(false);
+  }, true);
+
   sync();
 })();
 </script>
-<style id="clean-ui-v2">
-/* ===== v2: thinner + steadier bottom bar, lighter AMOLED surfaces ===== */
-#bottomBar.bottom-bar {
-  left: 0; right: 0; margin: 0 auto; width: max-content;      /* centred without transform (no jitter) */
-  transform: translateZ(0); will-change: transform;           /* own compositor layer: no flicker while the list scrolls */
-  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-  padding: 4px; gap: 4px;
-  box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 4px 12px -6px rgba(0,0,0,.16);
-  -webkit-backface-visibility: hidden; backface-visibility: hidden;
-}
-#bottomBar .bb-item { width: 92px; height: 36px; gap: 7px; font-size: 13px; transition: color .15s ease, background-color .15s ease; }
-#bottomBar .bb-item svg { width: 19px; height: 19px; }
-#bottomBar .bb-item:active { transform: none; }
-#bottomBar .bb-dot { top: 7px; left: 25px; width: 7px; height: 7px; }
-:root[data-theme="dark"] #bottomBar.bottom-bar { background: #1a2236; box-shadow: none; }
-/* AMOLED dark: not pure-black-on-black any more, soft grey surface + faint edge */
-:root[data-theme="dark"][data-p-amoled="1"] #bottomBar.bottom-bar,
-:root[data-theme="dark"][data-p-amoled="1"] #appHeader.app-header {
-  background: #1c1c1e !important;
-  border: 0.5px solid rgba(255,255,255,.07) !important;
-  box-shadow: none !important;
-}
-</style>
-<style id="amoled-soft-v1">
-/* ===== AMOLED dark: softer, one consistent grey scale (page < cards < header / bar < popups) ===== */
-:root[data-theme="dark"][data-p-amoled="1"][data-p-fs][data-p-accent] {
-  --bg-canvas: #121214; --bg-gradient: linear-gradient(#121214, #121214);
-  --app-bg: #121214; --card-bg: #1b1b1e; --card-hover: #242427; --surface-subtle: #1b1b1e;
-  --primary-blue-light: #242427;
-  --text-muted: #9a9aa0; --border-subtle: #2a2a2e;
-  --bubble-incoming: #1f1f22;
-  --header-bg: rgba(18, 18, 20, 0.96); --nav-inactive: #9a9aa0;
-}
-:root[data-theme="dark"][data-p-amoled="1"] .ai-companion-card { background: #1b1b1e !important; }
-:root[data-theme="dark"][data-p-amoled="1"] .ai-companion-card > svg { color: #9a9aa0 !important; }
-:root[data-theme="dark"][data-p-amoled="1"] #screenChat > .chat-top-header { --glass-top: rgba(18, 18, 20, 0.82); border-bottom-color: rgba(255,255,255,.06) !important; }
-:root[data-theme="dark"][data-p-amoled="1"] #pfpPicker .pfp-sheet { background: #1b1b1e; }
-:root[data-theme="dark"][data-p-amoled="1"] #settingsDrawer, 
-:root[data-theme="dark"][data-p-amoled="1"] #settingsDrawer#settingsDrawer.dp-ctx { --pm-bg: #232326; }
-:root[data-theme="dark"][data-p-amoled="1"] .msg-menu { background: #232326; }
-:root[data-theme="dark"][data-p-amoled="1"] .app-header { background: #1e1e21 !important; }
-:root[data-theme="dark"][data-p-amoled="1"] #bottomBar.bottom-bar,
-:root[data-theme="dark"][data-p-amoled="1"] #appHeader.app-header { background: #1e1e21 !important; border: 0.5px solid rgba(255,255,255,.07) !important; box-shadow: none !important; }
-</style>
-<style id="hdr-circle-soft-v1">
-/* header icon circles: much lighter (bottom bar keeps its own highlight) */
-:root { --hdr-circle: rgba(0, 0, 0, 0.045); --hdr-circle-press: rgba(0, 0, 0, 0.09); }
-:root[data-theme="dark"] { --hdr-circle: rgba(255, 255, 255, 0.075); --hdr-circle-press: rgba(255, 255, 255, 0.13); }
-/* gap between the circles: same ratio as the reference (~0.23 x circle size = 8px) */
-#appHeader .header-actions { gap: 8px !important; }
-#appHeader .header-actions > #btnToggleSearch,
-#appHeader .header-actions > #btnToggleTheme,
-#appHeader .header-actions > #btnOpenSettings,
-#appHeader #btnSlideToSearch { background: var(--hdr-circle) !important; }
-#appHeader .header-actions > #btnToggleSearch:active,
-#appHeader .header-actions > #btnToggleTheme:active,
-#appHeader .header-actions > #btnOpenSettings:active,
-#appHeader #btnSlideToSearch:active { background: var(--hdr-circle-press) !important; }
-</style>
-<style id="light-clean-v1">
-/* ===== LIGHT mode: neutral grey surfaces, white circles, no borders / blue tint ===== */
-:root:not([data-theme="dark"]) { --hdr-circle: #ffffff; --hdr-circle-press: #e8e9ec; }
-:root:not([data-theme="dark"]) #appHeader.app-header,
-:root[data-p-amoled="1"]:not([data-theme="dark"]) #appHeader.app-header,
-:root:not([data-theme="dark"]) #bottomBar.bottom-bar {
-  background: #f2f3f5 !important; border: 0 !important; box-shadow: none !important;
-}
-:root:not([data-theme="dark"]) #bottomBar .bb-item.on { background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-:root:not([data-theme="dark"]) #paneRooms .ai-companion-card { background: #f3f4f6 !important; box-shadow: none !important; }
-
-/* Room: tiny gap between the cards */
-#paneRooms .ai-companion-card { margin-bottom: 4px !important; }
-#paneRooms { padding-top: 8px !important; }
-</style>
-
-<style id="light-fix-v2">
-/* ===== 1) LIGHT MODE: grey smudge at the bottom of every screen =====
-   The closed bottom sheets (Delete account / Forward) sit just below the screen but their big
-   upward shadow leaked into the visible bottom edge. Invisible in dark, ugly in light. */
-.user-sheet-modal:not(.active) { box-shadow: none !important; }
-
-/* ===== 2) NO BLUE LIGHT when a text box is tapped ===== */
-input, textarea, select, [contenteditable], button { outline: none !important; -webkit-tap-highlight-color: transparent; }
-input:focus, input:focus-visible,
-textarea:focus, textarea:focus-visible,
-select:focus, [contenteditable]:focus { outline: none !important; box-shadow: none !important; }
-
-/* message box: focused look = normal look (no blue border, no blue ring) */
-.composer-inner:focus-within { border-color: var(--border-subtle) !important; box-shadow: var(--shadow-sm) !important; }
-.composer-inner:focus-within .composer-textarea { border-color: transparent !important; box-shadow: none !important; }
-@media (min-width: 900px) { .composer-inner:focus-within { box-shadow: none !important; } }
-
-/* login / settings / delete-password fields */
-.auth-field:focus, #authScreen .auth-field:focus,
-.profile-input:focus, .ep-input:focus,
-#settingsDrawer .ep-input:focus, #settingsDrawer .profile-input:focus {
-  border-color: var(--border-subtle) !important; box-shadow: none !important;
-}
-</style>
-
-<style id="light-depth-v1">
-/* LIGHT mode only: visible edges + soft shadows so nothing blends into the white page */
-:root:not([data-theme="dark"]) { --lt-line: #d9dfe8; --lt-line-soft: #e5e9f0; }
-
-/* top header */
-:root:not([data-theme="dark"]) #appHeader.app-header {
-  background: #f4f6fa !important; border: 1px solid var(--lt-line) !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 18px -8px rgba(15,23,42,.22) !important;
-}
-:root:not([data-theme="dark"]) #appHeader .header-actions > .action-btn-circle,
-:root:not([data-theme="dark"]) #appHeader #btnSlideToSearch {
-  background: #fff !important; border: 1px solid var(--lt-line) !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,.08) !important;
-}
-:root:not([data-theme="dark"]) .header-profile-btn { box-shadow: 0 1px 3px rgba(15,23,42,.18) !important; }
-
-/* search bar + slide bar */
-:root:not([data-theme="dark"]) .hdr-layer #searchBoxWrap, :root:not([data-theme="dark"]) .search-container {
-  border: 1px solid var(--lt-line) !important; box-shadow: 0 1px 2px rgba(15,23,42,.06) !important;
-}
-:root:not([data-theme="dark"]) .hdr-layer #inboxTabBar { border: 1px solid var(--lt-line) !important; }
-
-/* bottom bar */
-:root:not([data-theme="dark"]) #bottomBar.bottom-bar {
-  background: #f4f6fa !important; border: 1px solid var(--lt-line) !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,.06), 0 10px 22px -8px rgba(15,23,42,.28) !important;
-}
-:root:not([data-theme="dark"]) #bottomBar .bb-item.on { background: #fff; border: 1px solid var(--lt-line-soft); box-shadow: 0 1px 3px rgba(15,23,42,.12); }
-
-/* chat list + room cards */
-:root:not([data-theme="dark"]) #directsListContainer { border-top: 1px solid var(--lt-line-soft) !important; border-bottom: 1px solid var(--lt-line-soft) !important; }
-:root:not([data-theme="dark"]) .chat-card::after { background: var(--lt-line-soft); }
-:root:not([data-theme="dark"]) #paneRooms .ai-companion-card, :root:not([data-theme="dark"]) .ai-companion-card {
-  background: #fff !important; border: 1px solid var(--lt-line) !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,.06), 0 8px 18px -10px rgba(15,23,42,.22) !important;
-}
-
-/* chat screen: header + message box */
-:root:not([data-theme="dark"]) #screenChat > .chat-top-header {
-  background: rgba(255,255,255,.92) !important; border-bottom: 1px solid var(--lt-line) !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,.06), 0 10px 22px -12px rgba(15,23,42,.28) !important;
-}
-:root:not([data-theme="dark"]) .composer-inner, :root:not([data-theme="dark"]) .composer-inner:focus-within {
-  background: #fff; border: 1px solid #cfd6e2 !important;
-  box-shadow: 0 1px 2px rgba(15,23,42,.06), 0 6px 16px -8px rgba(15,23,42,.20) !important;
-}
-:root:not([data-theme="dark"]) .date-pill { border-color: var(--lt-line) !important; }
-
-/* popups / sheets / settings */
-:root:not([data-theme="dark"]) #settingsDrawer, :root:not([data-theme="dark"]) .msg-menu, :root:not([data-theme="dark"]) .user-sheet-modal.active { border: 1px solid var(--lt-line) !important; }
-</style>
 </body>
 </html>
